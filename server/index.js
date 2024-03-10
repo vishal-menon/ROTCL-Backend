@@ -161,17 +161,27 @@ io.on('connection', socket => {
         p1_monsters.forEach(pet => {
             if(pet.id === parseInt(data1[1])){
                 pet.currHp -= parseInt(data1[0])
+                if(pet.currHp <= 0){
+                    pet.currHp = 0
+                    pet.status = 'fainted'
+                }
             }
         });
 
         p2_monsters.forEach(pet => {
             if(pet.id === parseInt(data1[1])){
                 pet.currHp -= parseInt(data1[0])
+                if(pet.currHp <= 0){
+                    pet.currHp = 0
+                    pet.status = 'fainted'
+                }
             }
         });
 
         turnIndex = ((turnIndex + 1) % (p1_monsters.length + p2_monsters.length))
         turn = monster_ids[turnIndex]
+
+
 
         //Update State
         if(pNum === 1){
