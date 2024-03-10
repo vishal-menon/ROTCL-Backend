@@ -2,10 +2,11 @@ import { createServer } from "http"
 import { Server } from "socket.io"
 
 class monster {
-    constructor(hp, name, ability, id, owner) {
+    constructor(hp, name, status, ability, id, owner) {
         this.id = id;
         this.owner = owner;
         this.name = name;
+        this.status = status
         this.currHp = hp;
         this.hp = hp;
         this.ability = ability;
@@ -19,6 +20,7 @@ const monsters_p1 = [
         id : 0,
         name : 'm1',
         hp : 100,
+        status : 'alive',
         owner : 'p1',
         ability : [{
             name  : 'Swipe',
@@ -35,6 +37,7 @@ const monsters_p1 = [
         id : 1,
         name : 'm2',
         hp : 80,
+        status : 'alive',
         owner : 'p1',
         ability : [{
             name  : 'Bite',
@@ -45,7 +48,8 @@ const monsters_p1 = [
     {
         id : 2,
         name : 'm3',
-        hp : 150, 
+        hp : 150,
+        status : 'alive',
         owner : 'p1',
         ability : [{
             name  : 'Heal',
@@ -59,7 +63,8 @@ const monsters_p2 = [
     {
         id : 3,
         name : 'm1',
-        hp : 1000,
+        hp : 9,
+        status : 'alive',
         owner : 'p2',
         ability : [{
             name  : 'Swipe',
@@ -75,7 +80,8 @@ const monsters_p2 = [
     {
         id : 4,
         name : 'm2',
-        hp : 800,
+        hp : 10,
+        status : 'alive',
         owner : 'p2',
         ability : [{
             name  : 'Bite',
@@ -86,7 +92,8 @@ const monsters_p2 = [
     {
         id : 5,
         name : 'm3',
-        hp : 1500, 
+        hp : 21,
+        status : 'alive',
         owner : 'p2',
         ability : [{
             name  : 'Heal',
@@ -113,8 +120,8 @@ Game Manager
 
 */
 
-let p1_monsters = monsters_p1.map((m) => {return new monster(m.hp, m.name, m.ability, m.id, m.owner)})
-let p2_monsters = monsters_p2.map((m) => {return new monster(m.hp, m.name, m.ability, m.id, m.owner)})
+let p1_monsters = monsters_p1.map((m) => {return new monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
+let p2_monsters = monsters_p2.map((m) => {return new monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
 
 let all_monsters = p1_monsters.concat(p2_monsters)
 let monster_ids = all_monsters.map(monster => monster.id)
