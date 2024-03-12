@@ -1,0 +1,92 @@
+{
+	"KD" : {   
+		"monsters": [{
+	        "id ": 3,
+	        "name" : "m1",
+	        "hp" : 9,
+	        "status" : "alive",
+	        "owner" : "p2",
+	        "ability" : [{
+		            "name"  : "Swipe",
+		            "dmg" : 10,
+		            "type" : "atk"
+		        }, 
+	        {
+		            "name" : "Cut",
+		            "dmg" : 15,
+		            "type" : "atk"
+		        }]
+	    	},
+	    	{
+	            "id" : 4,
+	            "name" : "m2",
+	            "hp" : 10,
+	            "status" : "alive",
+	            "owner" : "p2",
+	            "ability" : [{
+		                "name"  : "Bite",
+		                "dmg" : 10,
+		                "type" : "atk"
+		            }]
+	        },
+	    	{
+	            "id" : 5,
+	            "name ": "m3",
+	            "hp" : 21,
+	            "status" : "alive",
+	            "owner" : "p2",
+	            "ability" : [{
+		                "name"  : "Heal",
+		                "dmg" : 5,
+		                "type" : "spt"
+		            }]
+			}
+		]
+	}
+,
+	"VM" : {
+	"monsters":[
+		{
+			"id" : 0,
+			"name" : "m1",
+			"hp" : 100,
+			"status" : "alive",
+			"owner" : "p1",
+			"ability" : [{
+				"name"  : "Swipe",
+				"dmg" : 10,
+				"type" : "atk"
+			}, 
+			{
+				"name" : "Cut",
+				"dmg" : 15,
+				"type" : "atk"
+			}]
+		},
+		{
+			"id" : 1,
+			"name" : "m2",
+			"hp" : 80,
+			"status" : "alive",
+			"owner" : "p1",
+			"ability" : [{
+			"name"  : "Bite",
+				"dmg" : 10,
+				"type" : "atk"
+			}]
+		},
+		{
+			"id" : 2,
+			"name" : "m3",
+			"hp" : 150,
+			"status" : "alive",
+			"owner" : "p1",
+			"ability" : [{
+				"name"  : "Heal",
+				"dmg" : 5,
+				"type" : "spt"
+			}]
+		}
+	]
+	}
+}
