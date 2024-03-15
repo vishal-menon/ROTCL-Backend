@@ -2,8 +2,8 @@ import { createServer } from "http"
 import { platform } from "os";
 import { Server } from "socket.io"
 import { v4 as uuidv4 } from 'uuid';
-import { monster } from './monster.js';
-import { Game } from './game.js';
+import { monster } from './definitions/monster.js';
+import { Game } from './definitions/game.js';
 
 const httpserver = createServer()
 
@@ -116,12 +116,38 @@ const activeGames = new Map();
 
 const users = {};
 
+function leaveMatch(pSocket, matchID){
+    pSocket.leave(matchID);
+}
+
+function isGameFinished(currMatch){
+
+    let p1deathCount = 0
+    let p2deathCount = 0
+
+    currMatch.p1_monsters.forEach(pet => {
+        if(pet.status === 'fainted')
+            p1deathCount += 1
+    });
+
+    currMatch.p2_monsters.forEach(pet => {
+        if(pet.status === 'fainted')
+            p2deathCount += 1
+    });
+
+    if(p1deathCount >= 3 || p2deathCount >= 3)
+        return true
+
+    return false
+}
+
 function isSocketInRoom(socketId) {
 
     const socket = io.sockets.sockets.get(socketId);
 
     if (socket) {
         const rooms = [...socket.rooms];
+        console.log(rooms)
         return rooms.length > 1 || (rooms.length === 1 && rooms[0] !== socket.id);
     } else {
         return false; // Socket not found
@@ -172,6 +198,8 @@ function changeTurn(newGame)
 
 function gameManager(data1, newGame)
 {
+    
+
         newGame.p1_monsters.forEach(pet => {
             if(pet.id === parseInt(data1[1])){
                 pet.currHp -= parseInt(data1[0])
@@ -211,7 +239,7 @@ io.on('connection', socket => {
         io.emit("update user", usernameArray);
     });
 
-    socket.on("duel", (duelRequest) => {
+    socket.on("duel", (duelRequest, setBattle) => {
 
         /*
         duelRequest = {
@@ -221,16 +249,20 @@ io.on('connection', socket => {
         */
         let playerSocketID = users[duelRequest.player].id;
         let oppSocketID = users[duelRequest.opponent].id;
+
+        console.log(duelRequest.player + " has requested to duel " + duelRequest.opponent + "!")
        
         //Function -> check if other player is not in any room
         
         if(!isSocketInRoom(oppSocketID) && playerSocketID !== oppSocketID){
             //If yes
             io.to(oppSocketID).emit("duelRequest", duelRequest);
+            setBattle(true)
         }
         else{
             //If no
             socket.emit("AlertMessage", duelRequest.opponent + " maybe dueling someone else.");
+            setBattle(false)
         }
 
     });
@@ -259,21 +291,41 @@ io.on('connection', socket => {
         //Init State
         playerSocket.emit("setState", [newGame.p1_monsters, newGame.p2_monsters, newGame.turn])
         oppSocket.emit("setState", [newGame.p2_monsters, newGame.p1_monsters, newGame.turn])
+        
+        playerSocket.on("exitMatch", () => {
+            leaveMatch(playerSocket, matchID);
+            playerSocket.removeAllListeners("Ability");
+            activeGames.delete(matchID)
+        }) 
 
+        oppSocket.on("exitMatch", () => {
+            leaveMatch(oppSocket, matchID);
+            oppSocket.removeAllListeners("Ability");
+        }) 
+
+        
         playerSocket.on("Ability", data1 => {
             
             let currMatch = activeGames.get(matchID);
+            console.log("Game Manager - id : " + matchID)
             gameManager(data1, currMatch)
             console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
+
+            //if(isGameFinished(currMatch)){
+                    //FinishGame & ExitRoom
+                    //finishGame(playerSocket, oppSocket, matchID, currMatch)
+                    //leaveMatch()
+           // }
 
         }) 
 
         oppSocket.on("Ability", data1 => {
 
             let currMatch = activeGames.get(matchID);
+            console.log("Game Manager - id : " + matchID)
             gameManager(data1, currMatch)
             console.log(activeGames);
 
@@ -281,6 +333,17 @@ io.on('connection', socket => {
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
         }) 
+
+        /*io.in(matchID).on("Ability", data1 =>{
+
+            let currMatch = activeGames.get(matchID);
+            gameManager(data1, currMatch)
+            console.log(activeGames);
+
+            playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
+            oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
+
+        })*/
         
 
     });
