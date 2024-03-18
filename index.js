@@ -1,5 +1,4 @@
 import { createServer } from "http"
-import { platform } from "os";
 import { Server } from "socket.io"
 import { v4 as uuidv4 } from 'uuid';
 import { monster } from './definitions/monster.js';
