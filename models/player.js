@@ -40,9 +40,9 @@ class Database {
         request.input('uid', sql.NVarChar(255), data.uid)
         request.input('pwdHash', sql.NVarChar(255), data.pwdHash)
         request.input('email', sql.NVarChar(255), data.email)
-        request.input('exp', sql.BigInt(), data.exp)
+        request.input('exp', sql.Int(), data.exp)
 
-        const result = await request(
+        const result = await request.query(
             `INSERT INTO Players (uid, pwdHash, email, exp) VALUES (@uid, @pwdHash, @email, @exp)`
         );
 
@@ -75,10 +75,10 @@ class Database {
         await this.connect();
         const request = this.poolconnection.request();
         
-        request.input('uid', NVarChar(255), id);
-        request.input('pwdHash', NVarChar(255), data.pwdHash);
-        request.input('email', NVarChar(255), data.email);
-        request.input('exp', BigInt(), data.exp);
+        request.input('uid', sql.NVarChar(255), id);
+        request.input('pwdHash', sql.NVarChar(255), data.pwdHash);
+        request.input('email', sql.NVarChar(255), data.email);
+        request.input('exp', sql.Int(), data.exp);
 
         const result = await request.query(
             `UPDATE Players SET pwdHash=@pwdHash, email=@email, exp=@exp WHERE uid=@uid`
@@ -105,8 +105,6 @@ class Database {
         const result = await request.query(
             'CREATE TABLE PLAYERS (uid varchar(255) PRIMARY KEY, pwdHash varchar(255), email varchar(255), exp int)'
         )
-
-        console.log(result);
     }
 }
 
