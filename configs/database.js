@@ -1,4 +1,4 @@
-require('dotenv').config('../.env')
+require('dotenv').config()
 
 const server = process.env.AZURE_SQL_SERVER;
 const database = process.env.AZURE_SQL_DATABASE;

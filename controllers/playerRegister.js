@@ -1,7 +1,5 @@
-const config = require('../configs/database');
-const Database = require('../models/player');
+const player = require('../models/player');
 const bcrypt = require('bcrypt')
-const db = new Database(config)
 
 const createPlayer = async (req, res) => {
     const {uid, pwd, email} = req.body
@@ -10,23 +8,31 @@ const createPlayer = async (req, res) => {
         {'message' : 'UID and Password are required.'}
     )
 
-    const isDuplicate = await db.read(uid)
+    const isDuplicate = await player.readPlayer(uid)
 
     if(isDuplicate) return res.sendStatus(409);
     
     try{
-        const hashedPwd = await bcrypt.hash(newPlayer.pwdHash, 10)
+        const hashedPwd = await bcrypt.hash(pwd, 10)
         const newPlayer = {
             uid : uid,
             pwdHash : hashedPwd,
             email : email,
             exp : 0
         }
-        const data = await db.create(newPlayer)
-        res.status(201).json({'success' : `New user ${user} created.`});
+        const data = await player.addPlayer(newPlayer)
+        res.status(201).json({'success' : `New user ${uid} created.`});
     } catch(err) {
         res.status(500).json({'message' : err.message});
     }
 }
 
-module.exports = createPlayer
+const getPlayer = async (req, res) => {
+    const result = await player.readPlayer(req.body.uid);
+    res.json(result)
+}
+
+module.exports = {
+    createPlayer,
+    getPlayer
+}
