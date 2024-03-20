@@ -11,7 +11,7 @@ const handleLogin = async (req, res) => {
     const foundPlayer = await player.readPlayer(uid);
     if (!foundPlayer) return res.sendStatus(401); //Unauthorized
 
-    const match = await bcrypt.compare(pwd. foundPlayer.pwdHash);
+    const match = await bcrypt.compare(pwd, foundPlayer.pwdHash);
     if(match) {
         const accessToken = jwt.sign(
             {"uid" : foundPlayer.uid},

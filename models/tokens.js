@@ -9,7 +9,7 @@ const addToken = async (data) => {
     request.input('uid', NVarChar(255), data.uid);
     request.input('token', NVarChar(255), data.token);
 
-    request.query('INSERT INTO PlayersRefreshTokens (uid, token) VALUES (@uid, @token)');
+    request.query('INSERT INTO PlayerRefreshTokens (uid, token) VALUES (@uid, @token)');
 }
 
 const searchToken = async (token) => {
