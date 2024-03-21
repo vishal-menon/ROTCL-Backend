@@ -34,8 +34,20 @@ const deleteToken = async (token) => {
         );
 }
 
+const updateToken = async (data) => {
+    const request = await db.connect();
+
+    request.input('uid', NVarChar(255), data.uid);
+    request.input('token', NVarChar(255), data.token);
+
+    const result = await request.query(
+        'UPDATE PlayerRefreshTokens SET token=@token WHERE uid=@uid'
+    );
+}
+
 module.exports = {
     addToken,
     searchToken,
+    updateToken,
     deleteToken
 }
