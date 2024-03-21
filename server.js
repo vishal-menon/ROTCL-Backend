@@ -2,10 +2,14 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const credentials = require('./middleware/credentials');
 
-app.use(credentials());
-app.use(cors())
+const corsConfig = {
+    origin : true,
+    credentials : true,
+}
+
+app.use(cors(corsConfig))
+app.options('*', cors(corsConfig))
 app.use(express.json());
 app.use(cookieParser());
 

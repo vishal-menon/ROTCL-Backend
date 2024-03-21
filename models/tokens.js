@@ -24,6 +24,18 @@ const searchToken = async (token) => {
     return result.recordset[0];
 }
 
+const searchPlayer = async (uid) => {
+    const request = await db.connect();
+    
+    const result = await request
+        .input('uid', NVarChar(255), uid)
+        .query(
+            'SELECT * FROM PlayerRefreshTokens WHERE uid=@uid'
+        );
+    
+    return result.recordset[0];
+}
+
 const deleteToken = async (token) => {
     const request = await db.connect();
 
@@ -48,6 +60,7 @@ const updateToken = async (data) => {
 module.exports = {
     addToken,
     searchToken,
+    searchPlayer,
     updateToken,
     deleteToken
 }

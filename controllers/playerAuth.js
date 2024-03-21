@@ -23,11 +23,11 @@ const handleLogin = async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '1d'}
         );
-        const prevToken = await tokens.searchToken(uid);
+        const prevToken = await tokens.searchPlayer(uid);
         if (prevToken) tokens.updateToken({"uid": uid, "token": refreshToken});
         else tokens.addToken({"uid": uid, "token": refreshToken});
         res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'None', secure: true, securmaxAge: 24 * 60 * 60 * 1000});
-        res.json({accessToken: accessToken, uid: foundPlayer.uid})
+        res.json({'accessToken': accessToken, 'uid': foundPlayer.uid})
     } else {
         res.sendStatus(401);
     }
