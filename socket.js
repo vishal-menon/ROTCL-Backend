@@ -1,10 +1,15 @@
-import { createServer } from "http"
-import { Server } from "socket.io"
-import { v4 as uuidv4 } from 'uuid';
-import { monster } from './definitions/monster.js';
-import { Game } from './definitions/game.js';
+const express = require('express');
+const http = require('http');
+const cors = require('cors');
+const { Server } = require('socket.io');
+const { v4: uuidv4 } = require('uuid');
+const Monster = require('./models/monster.js');
+const Game = require('./models/game.js');
 
-const httpserver = createServer()
+const app = express();
+app.use(cors());
+
+const httpServer = http.createServer(app);
 
 const monsters_p1 = [
     {
@@ -94,7 +99,7 @@ const monsters_p2 = [
     }
 ]
 
-const io = new Server(httpserver, {
+const io = new Server(httpServer, {
     cors: {
         origin: process.env.NODE_ENV === "production" ? false : ["http://127.0.0.1:5500","http://localhost:3000"]
     }
@@ -254,16 +259,20 @@ io.on('connection', socket => {
 
     socket.on("duel", (duelRequest, setBattle) => {
 
+    
+
         /*
         duelRequest = {
            player : 'playerUsername',
            opponent : 'opponentUsername'
         };
         */
+        console.log(duelRequest.player + " has requested to duel " + duelRequest.opponent + "!")
+
         let playerSocketID = users[duelRequest.player].id;
         let oppSocketID = users[duelRequest.opponent].id;
 
-        console.log(duelRequest.player + " has requested to duel " + duelRequest.opponent + "!")
+        
        
         //Function -> check if other player is not in any room
         
@@ -287,8 +296,8 @@ io.on('connection', socket => {
 
         const matchID = uuidv4();
 
-        let p1_monsters = monsters_p1.map((m) => {return new monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
-        let p2_monsters = monsters_p2.map((m) => {return new monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
+        let p1_monsters = monsters_p1.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
+        let p2_monsters = monsters_p2.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
 
         
         const newGame = new Game(matchID, p1_monsters, p2_monsters, 0);
@@ -376,5 +385,7 @@ io.on('connection', socket => {
 })
 
 
-
-httpserver.listen(3502, () => console.log('listening on port 3501'))
+const PORT = process.env.PORT || 3502;
+httpServer.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

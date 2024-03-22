@@ -1,4 +1,4 @@
-export class Game {
+class Game {
     constructor(gameId, p1_monsters, p2_monsters, turn) {
         this.gameId = gameId;
         this.p1_monsters = p1_monsters;
@@ -8,3 +8,5 @@ export class Game {
 
     // Methods to update game state, handle player actions, etc.
 }
+
+module.exports = Game;

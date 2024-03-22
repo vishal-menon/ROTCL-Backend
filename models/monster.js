@@ -1,4 +1,4 @@
-export class monster {
+class Monster {
     constructor(hp, name, status, ability, id, owner) {
         this.id = id;
         this.owner = owner;
@@ -9,3 +9,5 @@ export class monster {
         this.ability = ability;
     }
 }
+
+module.exports = Monster;
