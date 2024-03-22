@@ -9,7 +9,7 @@ const handleLogout = (req, res) => {
     const player = tokens.searchToken(refreshToken);
 
     if (!player) {
-        res.clearCookie('jwt', {http: true, sameSite: 'None', secure : true});
+        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure : true});
         return res.sendStatus(204);
     }
 

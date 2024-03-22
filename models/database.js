@@ -8,14 +8,11 @@ class Database {
 
     async connect() {
         try{
-            console.log(`Database connecting...${this.connected}`);
             if (this.connected === false) {
                 this.poolconnection = await sql.connect(this.config)
                 this.connected = true;
-                console.log('Database connection succesfull');
-            } else {
-                console.log('Database already connected');
-            }
+                console.log('DB Connection successfull');
+            } 
         } catch (error) {
             console.error(`Error connecting to database : ${error}`);
         }
