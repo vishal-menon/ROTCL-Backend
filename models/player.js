@@ -9,10 +9,9 @@ const addPlayer = async (data) => {
     request.input('uid', NVarChar(255), data.uid);
     request.input('pwdHash', NVarChar(255), data.pwdHash);
     request.input('email', NVarChar(255), data.email);
-    request.input('exp', Int, data.exp)
 
     const result = request.query(
-        'INSERT INTO Players (uid, pwdHash, email, exp) VALUES (@uid, @pwdHash, @email, @exp)'
+        'INSERT INTO Players (uid, pwdHash, email, exp) VALUES (@uid, @pwdHash, @emails)'
     );
 }
 
@@ -33,11 +32,10 @@ const updatePlayer = async (uid, data) => {
 
     request.input('uid', NVarChar(255), uid);
     request.input('pwdHash', NVarChar(255), data.pwdHash);
-    request.input('email', NVarChar(255), data.email);
-    request.input('exp', Int, data.exp);
+    request.input('email', NVarChar(255), data.email); 
 
     const result = await request.query(
-        'UPDATE Players SET uid=@uid, pwdHash=@pwdHash, email=@email, exp=@exp'
+        'UPDATE Players SET uid=@uid, pwdHash=@pwdHash, email=@email'
     );
 
     return result.rowsAffected[0];
