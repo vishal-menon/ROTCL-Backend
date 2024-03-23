@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
 const Monster = require('./models/monster.js');
 const Game = require('./models/game.js');
+const socketService = require('./services/socketService.js')
 
 const app = express();
 app.use(cors());
@@ -120,119 +121,6 @@ const activeGames = new Map();
 
 const users = {};
 
-function leaveMatch(pSocket, matchID){
-    pSocket.leave(matchID);
-}
-
-function isGameFinished(currMatch){
-
-    let p1deathCount = 0
-    let p2deathCount = 0
-
-    console.log(currMatch.gameId)
-
-    currMatch.p1_monsters.forEach(pet => {
-        if(pet.status === 'fainted')
-            p1deathCount += 1
-    });
-
-    currMatch.p2_monsters.forEach(pet => {
-        if(pet.status === 'fainted')
-            p2deathCount += 1
-    });
-
-    if(p1deathCount >= 3)
-        return 2
-    else if(p2deathCount >= 3)
-        return 1
-    else
-        return 0
-
-}
-
-function isSocketInRoom(socketId) {
-
-    const socket = io.sockets.sockets.get(socketId);
-
-    if (socket) {
-        const rooms = [...socket.rooms];
-        console.log(rooms)
-        return rooms.length > 1 || (rooms.length === 1 && rooms[0] !== socket.id);
-    } else {
-        return false; // Socket not found
-    }
-}
-
-function getMonsterByID(pID, newGame)
-{
-    let res
-
-    newGame.p1_monsters.forEach(pet => {
-        if(pet.id === pID)
-        {
-            res = pet
-        }
-    });
-    newGame.p2_monsters.forEach(pet => {
-        if(pet.id === pID)
-        {
-            res = pet
-        }
-    });
-
-    return res
-}
-
-function changeTurn(newGame)
-{
-    let all_monsters = newGame.p1_monsters.concat(newGame.p2_monsters)
-
-    let currTurnReached = false
-    for(let i = 0; ; i = ((i + 1)%all_monsters.length) )
-    {
-        if(currTurnReached){
-            if(getMonsterByID(all_monsters[i].id, newGame).status !== 'fainted'){
-                newGame.turn = getMonsterByID(all_monsters[i].id, newGame).id
-                break
-            }
-        }
-
-        if(all_monsters[i].id === newGame.turn){
-            currTurnReached = true;
-        }
-
-    }
-
-}
-
-function gameManager(data1, newGame)
-{
-    
-
-        newGame.p1_monsters.forEach(pet => {
-            if(pet.id === parseInt(data1[1])){
-                pet.currHp -= parseInt(data1[0])
-                if(pet.currHp <= 0){
-                    pet.currHp = 0
-                    pet.status = 'fainted'
-                }
-            }
-        });
-
-        newGame.p2_monsters.forEach(pet => {
-            if(pet.id === parseInt(data1[1])){
-                pet.currHp -= parseInt(data1[0])
-                if(pet.currHp <= 0){
-                    pet.currHp = 0
-                    pet.status = 'fainted'
-                }
-            }
-        });
-
-        
-        changeTurn(newGame);  
-}
-
 io.on('connection', socket => {
     const numClients = io.engine.clientsCount;
     console.log(numClients)
@@ -276,7 +164,7 @@ io.on('connection', socket => {
        
         //Function -> check if other player is not in any room
         
-        if(!isSocketInRoom(oppSocketID) && playerSocketID !== oppSocketID){
+        if(!socketService.isSocketInRoom(oppSocketID, io) && playerSocketID !== oppSocketID){
             //If yes
             io.to(oppSocketID).emit("duelRequest", duelRequest);
             setBattle(true)
@@ -316,24 +204,24 @@ io.on('connection', socket => {
 
         playerSocket.on("disconnect", (reason) => {
             oppSocket.emit("hasWon", true)
-            leaveMatch(playerSocket, matchID);
+            socketService.leaveMatch(playerSocket, matchID);
             playerSocket.removeAllListeners("Ability");
         }) 
 
         oppSocket.on("disconnect", (reason) => {
             playerSocket.emit("hasWon", true)
-            leaveMatch(oppSocket, matchID);
+            socketService.leaveMatch(oppSocket, matchID);
             oppSocket.removeAllListeners("Ability");
         }) 
         
         playerSocket.on("exitMatch", () => {
-            leaveMatch(playerSocket, matchID);
+            socketService.leaveMatch(playerSocket, matchID);
             playerSocket.removeAllListeners("Ability");
             activeGames.delete(matchID)
         }) 
 
         oppSocket.on("exitMatch", () => {
-            leaveMatch(oppSocket, matchID);
+            socketService.leaveMatch(oppSocket, matchID);
             oppSocket.removeAllListeners("Ability");
         }) 
 
@@ -342,17 +230,17 @@ io.on('connection', socket => {
             
             let currMatch = activeGames.get(matchID);
             console.log("Game Manager - id : " + matchID)
-            gameManager(data1, currMatch)
+            socketService.gameManager(data1, currMatch)
             console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
-            if(isGameFinished(currMatch) === 1){
+            if(socketService.isGameFinished(currMatch) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
             }
-            else if(isGameFinished(currMatch) === 2){
+            else if(socketService.isGameFinished(currMatch) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
             }
@@ -363,17 +251,17 @@ io.on('connection', socket => {
 
             let currMatch = activeGames.get(matchID);
             console.log("Game Manager - id : " + matchID)
-            gameManager(data1, currMatch)
+            socketService.gameManager(data1, currMatch)
             console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
-            if(isGameFinished(currMatch) === 1){
+            if(socketService.isGameFinished(currMatch) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
             }
-            else if(isGameFinished(currMatch) === 2){
+            else if(socketService.isGameFinished(currMatch) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
             }
