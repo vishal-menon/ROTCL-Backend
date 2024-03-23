@@ -1,4 +1,4 @@
-const player = require('../models/player');
+const player = require('../services/player');
 const bcrypt = require('bcrypt')
 
 const createPlayer = async (req, res) => {

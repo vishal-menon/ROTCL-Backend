@@ -1,5 +1,5 @@
 const { NVarChar, Int } = require('mssql')
-const Database = require('./database')
+const Database = require('../models/database')
 
 const db = new Database()
 

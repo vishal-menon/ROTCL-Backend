@@ -1,4 +1,4 @@
-const tokens = require('../models/tokens');
+const tokens = require('../services/tokens');
 
 const handleLogout = (req, res) => {
     const cookies = req.cookies;

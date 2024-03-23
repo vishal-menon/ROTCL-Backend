@@ -1,6 +1,6 @@
 require('dotenv').config();
-const player = require('../models/player');
-const tokens = require('../models/tokens');
+const player = require('../services/player');
+const tokens = require('../services/tokens');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
