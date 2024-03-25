@@ -15,9 +15,8 @@ const addPet = async (data) => {
     request.input('modifSpd', Decimal(3,2), data.modifSpd);
     request.input('modifDef', Decimal(3,2), data.modifDef);
     request.input('exp', Int(), data.exp);
-    request.input('birthDate', DateTime(), data.birthDate);
 
-    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, @birthDate)');
+    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, getdate())');
 }
 
 
@@ -30,7 +29,23 @@ const searchPetsByPlayer = async (uid) => {
             'SELECT * FROM Pets WHERE uid=@uid'
         );
     
-    return result.recordset[0];
+    return result.recordsets;
+}
+
+const updatePet = async (data) => {
+    const request = await db.connect();
+
+    request.input('mid', NVarChar(255), data.mid);
+    request.input('uid', NVarChar(255), data.uid);
+    request.input('name', NVarChar(255), data.name);
+    request.input('altName', NVarChar(255), data.altName);
+    request.input('modifHp', Decimal(3,2), data.modifHp);
+    request.input('modifAtk', Decimal(3,2), data.modifAtk);
+    request.input('modifSpd', Decimal(3,2), data.modifSpd);
+    request.input('modifDef', Decimal(3,2), data.modifDef);
+    request.input('exp', Int(), data.exp);
+
+    request.query('UPDATE Pets SET altname=@altname, modifHp=@modifHp, modifAtk=@modifAtk, modifSpd=@modifSpd, modifDef=@modifDef, exp=@exp')
 }
 
 const deletePet = async (mid) => {
@@ -43,19 +58,10 @@ const deletePet = async (mid) => {
         );
 }
 
-// const updateToken = async (data) => {
-//     const request = await db.connect();
-
-//     request.input('uid', NVarChar(255), data.uid);
-//     request.input('token', NVarChar(255), data.token);
-
-//     const result = await request.query(
-//         'UPDATE PlayerRefreshTokens SET token=@token WHERE uid=@uid'
-//     );
-// }
 
 module.exports = {
     addPet,
     searchPetsByPlayer,
+    updatePet,
     deletePet
 }

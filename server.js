@@ -18,7 +18,8 @@ app.use('/login', require('./routes/login'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use('/stats', require('./routes/stats'));
+app.use('/pets', require('./routes/pets'))
 
 app.listen(3001, ()=>{
     console.log('server started on port 3001');
-});
+});``

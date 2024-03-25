@@ -6,9 +6,11 @@ const db = new Database();
 const getPlayerStats = async (uid) => {
     const request = await db.connect();
 
-    await request.
+    const result = await request.
         input('uid', NVarChar(255), uid);
         query('SELECT * FROM PlayerStats WHERE uid=@uid');
+
+    return result.recordset[0];
 }
 
 const addPlayerStats = async (data) => {
