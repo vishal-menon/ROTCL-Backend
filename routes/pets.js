@@ -5,3 +5,5 @@ router.route('/')
     .get(PetsController.getPetsbyPlayer)
     .put(PetsController.updatePet)
     .post(PetsController.addPet)
+
+module.exports = router

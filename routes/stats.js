@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const playerStatsController = require('../controllers/playerStatsController');
 
-router.router('/')
+router.route('/')
         .get(playerStatsController.getStats)
         .put(playerStatsController.updateStats)
+
+module.exports = router

@@ -1,5 +1,5 @@
 const Pets = require('../services/pets');
-const Player = require('../services/Players')
+const Player = require('../services/player')
 
 const getPetsbyPlayer = async (req, res) => {    
     const pets = await Pets.searchPetsByPlayer(req.body.uid);
