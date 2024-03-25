@@ -2,7 +2,7 @@ const Pets = require('../services/pets');
 const Player = require('../services/player')
 
 const getPetsbyPlayer = async (req, res) => {    
-    const pets = await Pets.searchPetsByPlayer(req.body.uid);
+    const pets = await Pets.searchPetsByPlayer(req.params.id);
     if (pets) {
         res.status(200).json(pets);
     } else res.sendStatus(404);

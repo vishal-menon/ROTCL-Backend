@@ -1,3 +1,48 @@
+const { response } = require('express');
+const petsController = require('../controllers/petsController')
+const Monster = require('../models/monster.js');
+
+
+async function getMonsterByName(name){
+
+    let monsters
+    
+    await fetch(`http://localhost:3001/monsters/${name}`, {
+        method: 'GET'
+      })
+    .then(response => response.json())
+    .then(data => {
+        monsters = data
+    });
+
+    return monsters;
+}
+
+async function getPlayerMonsters(uid){
+
+    let pets
+    
+    await fetch(`http://localhost:3001/pets/${uid}`, {
+        method: 'GET'
+      })
+    .then(response => response.json())
+    .then(data => data[0])
+    .then(data => {
+
+        pets = data.filter((pet) => {
+            return pet.inParty
+        });
+    });
+
+    pets.forEach(async pet => {
+
+        let x = await getMonsterByName(pet.name)
+
+        pet = {...pet, ...x}        
+    });
+
+    return pets;
+}
 
 function leaveMatch(pSocket, matchID){
     pSocket.leave(matchID);
@@ -118,5 +163,7 @@ module.exports = {
     isSocketInRoom,
     getMonsterByID,
     changeTurn,
-    gameManager
+    gameManager,
+    getPlayerMonsters,
+   // getTestingMonster
 }

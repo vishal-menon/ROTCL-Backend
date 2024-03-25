@@ -1,8 +1,9 @@
+const { log } = require('console');
 const playerStats = require('../services/playerStats');
 
 const getStats = async (req, res) => {
     try {
-        const data = await playerStats.getPlayerStats(req.body.uid);
+        const data = await playerStats.getPlayerStats(req.params.id);
         if (data) res.status(200).json(data);
         else res.sendStatus(404);
     } catch (err) { 

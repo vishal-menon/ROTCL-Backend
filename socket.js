@@ -174,13 +174,21 @@ io.on('connection', socket => {
             socket.emit("AlertMessage", duelRequest.opponent + " maybe dueling someone else.");
             setBattle(false)
         }
-2
+
     });
     
-    socket.on("duelAccept", (duelRequest) => {
+    socket.on("duelAccept", async (duelRequest) => {
 
         let playerSocket = users[duelRequest.player];
         let oppSocket = users[duelRequest.opponent];
+
+        let p1mon = await socketService.getPlayerMonsters(duelRequest.player);
+        let p2mon = await socketService.getPlayerMonsters(duelRequest.opponent);
+        
+
+        // console.log("console.log dat shit!")
+        // let test = await socketService.getTestingMonster('Duck');
+        // console.log(test)
 
         const matchID = uuidv4();
 

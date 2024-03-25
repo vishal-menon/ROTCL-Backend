@@ -5,10 +5,10 @@ const db = new Database();
 
 const getPlayerStats = async (uid) => {
     const request = await db.connect();
-
-    const result = await request.
-        input('uid', NVarChar(255), uid);
-        query('SELECT * FROM PlayerStats WHERE uid=@uid');
+    console.log(uid);
+    const result = await request
+        .input('uid', NVarChar(255), uid)
+        .query('SELECT * FROM PlayerStats WHERE uid=@uid');
 
     return result.recordset[0];
 }
