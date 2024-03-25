@@ -1,4 +1,5 @@
 const player = require('../services/player');
+const playerStats = require('../services/playerStats');
 const bcrypt = require('bcrypt')
 
 const createPlayer = async (req, res) => {
@@ -18,21 +19,19 @@ const createPlayer = async (req, res) => {
             uid : uid,
             pwdHash : hashedPwd,
             email : email,
-            exp : 0
         }
+        const newPlayerStats = {
+            uid : uid,
+            exp : 0,
+            wins : 0,
+            losses : 0 
+        } 
         const data = await player.addPlayer(newPlayer)
+        await playerStats.addPlayerStats(newPlayerStats)
         res.status(201).json({'success' : `New user ${uid} created.`});
     } catch(err) {
         res.status(500).json({'message' : err.message});
     }
 }
 
-const getPlayer = async (req, res) => {
-    const result = await player.readPlayer(req.body.uid);
-    res.json(result)
-}
-
-module.exports = {
-    createPlayer,
-    getPlayer
-}
+module.exports = { createPlayer }

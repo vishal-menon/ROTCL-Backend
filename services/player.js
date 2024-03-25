@@ -11,7 +11,7 @@ const addPlayer = async (data) => {
     request.input('email', NVarChar(255), data.email);
 
     const result = request.query(
-        'INSERT INTO Players (uid, pwdHash, email, exp) VALUES (@uid, @pwdHash, @emails)'
+        'INSERT INTO Players (uid, pwdHash, email) VALUES (@uid, @pwdHash, @emails)'
     );
 }
 
