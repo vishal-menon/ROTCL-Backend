@@ -20,7 +20,7 @@ const addPet = async (req, res) => {
 
 const updatePet = async (req, res) => {
     const data = req.body;
-    const pet = await Pets.searchPetsByPlayer(data.uid);
+    const pet = await Pets.searchPet(data.mid);
     if (pet) {
         Pets.updatePet(data)
     } else {

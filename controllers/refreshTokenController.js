@@ -20,7 +20,7 @@ const handleRefreshToken = async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 {expiresIn: '5m'}
             );
-            res.json({accessToken: accessToken, uid: player.uid});
+            res.json({accessToken: accessToken, uid: player.uid, hasReceivedStarters: player.hasReceivedStarters});
         }
     );
 }

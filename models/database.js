@@ -5,7 +5,7 @@ class Database {
     config = config;
     poolconnection = null;
     connected = false;
-
+    
     async connect() {
         try{
             if (this.connected === false) {

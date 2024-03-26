@@ -27,7 +27,8 @@ const handleLogin = async (req, res) => {
         if (prevToken) tokens.updateToken({"uid": foundPlayer.uid, "token": refreshToken});
         else tokens.addToken({"uid": foundPlayer.uid, "token": refreshToken});
         res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
-        res.json({'accessToken': accessToken, 'uid': foundPlayer.uid})
+        res.json({'accessToken': accessToken, 'uid': foundPlayer.uid, 'hasReceivedStarters': 
+            foundPlayer.hasReceivedStarters})
     } else {
         res.sendStatus(401);
     }

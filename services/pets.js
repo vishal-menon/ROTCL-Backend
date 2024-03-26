@@ -1,4 +1,4 @@
-const { NVarChar, Decimal, Int, DateTime } = require('mssql');
+const { NVarChar, Decimal, Int } = require('mssql');
 const Database = require('../models/database')
 
 const db = new Database()
@@ -19,7 +19,6 @@ const addPet = async (data) => {
     request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, getdate())');
 }
 
-
 const searchPetsByPlayer = async (uid) => {
     const request = await db.connect();
     
@@ -30,6 +29,18 @@ const searchPetsByPlayer = async (uid) => {
         );
     
     return result.recordsets;
+}
+
+const searchPet = async (mid) => {
+    const request = await db.connect();
+    
+    const result = await request
+        .input('mid', NVarChar(255), mid)
+        .query(
+            'SELECT * FROM Pets WHERE mid=@mid'
+        );
+    
+    return result.recordset[0];
 }
 
 const updatePet = async (data) => {
@@ -48,20 +59,11 @@ const updatePet = async (data) => {
     request.query('UPDATE Pets SET altname=@altname, modifHp=@modifHp, modifAtk=@modifAtk, modifSpd=@modifSpd, modifDef=@modifDef, exp=@exp')
 }
 
-const deletePet = async (mid) => {
-    const request = await db.connect();
-
-    await request
-        .input('mid', NVarChar(255), mid)
-        .query(
-            'DELETE FROM PlayerRefreshTokens WHERE mid=@mid'
-        );
-}
-
 
 module.exports = {
     addPet,
     searchPetsByPlayer,
+    searchPet,
     updatePet,
-    deletePet
+
 }
