@@ -1,4 +1,4 @@
-const Abilites = require('../services/abilities')
+const Abilities = require('../services/abilities')
 
 // get ability details
 const getAbility = async (req, res) => {
@@ -11,9 +11,19 @@ const getAbility = async (req, res) => {
     }
 }
 
+const getSubAbilitiesBasedOnAbility = async(req, res) => {
+    const response = await Abilities.getSubAbilitiesBasedOnAbility(req.params?.name)
+
+    if (response) {
+        res.status(200).json(response)
+    } else {
+        res.sendStatus(404);
+    }
+}
+
 // get abilites for a pet
 const getPetAbilities = async (req, res) => {
-    const response = await Abilities.getAbility(req.params?.mid);
+    const response = await Abilities.getAbilitiesBasedOnPet(req.params?.mid);
 
     if (response ) {
         res.status(200).json(response)
@@ -45,6 +55,7 @@ const addPetAbility = async (req, res) => {
 module.exports = {
     getAbility,
     getPetAbilities,
+    getSubAbilitiesBasedOnAbility,
     addAbility,
     addPetAbility
 }

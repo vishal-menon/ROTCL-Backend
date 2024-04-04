@@ -186,17 +186,32 @@ io.on('connection', socket => {
         let p2mon = await socketService.getPlayerMonsters(duelRequest.opponent);
         
 
+        // console.log(p1mon)
         // console.log("console.log dat shit!")
         // let test = await socketService.getTestingMonster('Duck');
         // console.log(test)
 
         const matchID = uuidv4();
 
+        let new_p1_monsters = p1mon.map((m) => {return new Monster(m.baseHp, m.altName, 'alive', m.abilities, m.mid, m.uid, m.baseAtk, m.baseDef, m.baseSpd, m.baseStamina, m.modifHp, m.modifAtk, m.modifDef, m.modifSpd, m.imgPath)});
+        let new_p2_monsters = p2mon.map((m) => {return new Monster(m.baseHp, m.altName, 'alive', m.abilities, m.mid, m.uid, m.baseAtk, m.baseDef, m.baseSpd, m.baseStamina, m.modifHp, m.modifAtk, m.modifDef, m.modifSpd, m.imgPath)});
+
         let p1_monsters = monsters_p1.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
         let p2_monsters = monsters_p2.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
 
+        console.log(new_p1_monsters)
+        console.log("\n\n\n")
+        console.log(p1_monsters)
         
-        const newGame = new Game(matchID, p1_monsters, p2_monsters, 0);
+        //mIDTurnOrder
+        const allmon = new_p1_monsters.concat(new_p2_monsters) 
+        const mIDTurnOrder = allmon.map((m) => {
+            return {mid: m.id, speed : m.currSpd}
+        }).sort((a, b) => b.speed - a.speed)
+
+        console.log(mIDTurnOrder)
+
+        const newGame = new Game(matchID, new_p1_monsters, new_p2_monsters, mIDTurnOrder[0].mid);
         activeGames.set(matchID, newGame);
 
         //Send both players to a new room.
@@ -234,11 +249,11 @@ io.on('connection', socket => {
         }) 
 
         
-        playerSocket.on("Ability", data1 => {
+        playerSocket.on("Ability", async nameTarget => {
             
             let currMatch = activeGames.get(matchID);
             console.log("Game Manager - id : " + matchID)
-            socketService.gameManager(data1, currMatch)
+            await socketService.gameManager(nameTarget, currMatch, mIDTurnOrder)
             console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
@@ -255,11 +270,11 @@ io.on('connection', socket => {
 
         }) 
 
-        oppSocket.on("Ability", data1 => {
+        oppSocket.on("Ability", async nameTarget => {
 
             let currMatch = activeGames.get(matchID);
             console.log("Game Manager - id : " + matchID)
-            socketService.gameManager(data1, currMatch)
+            await socketService.gameManager(nameTarget, currMatch, mIDTurnOrder)
             console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])

@@ -7,11 +7,15 @@ router.route('/')
 router.route('/pet')
     .post(AbilityController.addPetAbility)
 
-router.route('/pet/:uid')
+router.route('/pet/:mid')
     .get(AbilityController.getPetAbilities)
+
+router.route('/listofsub/:name')
+    .get(AbilityController.getSubAbilitiesBasedOnAbility)
 
 router.route('/:name')
     .get(AbilityController.getAbility)
+
 
 
 module.exports = router;
