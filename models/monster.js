@@ -3,7 +3,8 @@ class Monster {
         this.id = id;
         this.owner = owner;
         this.name = name;
-        this.status = status
+        this.status = status;
+        this.buffs = {};
         this.currHp = hp * modifHp;
         this.hp = hp;
         this.currAtk = baseAtk * modifAtk

@@ -140,6 +140,14 @@ function getMonsterByID(pID, newGame)
     return res
 }
 
+function onTurnStatusEffect(newGame){
+    let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
+
+    for (let key in myPet.buffs){
+        invokeStatusEffect(myPet , key, myPet.buffs[key])
+    }
+}
+
 function changeTurn(newGame, mIDTurnOrder)
 {
     let all_monsters = mIDTurnOrder
@@ -160,13 +168,52 @@ function changeTurn(newGame, mIDTurnOrder)
 
     }
 
+    onTurnStatusEffect(newGame)
+
+}
+
+async function invokeStatusEffect(myPet, statusName, details){
+
+    if(details.turns <= 0)
+    {
+        delete myPet.buffs[statusName]
+        return;
+    }
+
+    console.log(statusName + " has been invoked on " + myPet.name)
+
+    myPet.currHp += details.value
+
+    if(myPet.currHp <= 0){
+        myPet.currHp = 0
+        myPet.status = 'fainted'
+    }
+
+    details.turns -= 1;
+
+}
+
+async function applyStatusEffect(subAbility, affectedPet, myPet){
+
+    let abilityVal = 0;
+    
+    if(subAbility.modifier !== null)
+        abilityVal = subAbility.modifier * myPet.currAtk;
+
+    affectedPet.buffs[`'${subAbility.status}'`] = { value: abilityVal, turns: subAbility.turns };
+
 }
 
 async function applyAbility(newGame, subAbility, target){
 
-    if(subAbility.target === 'target'){
-        let affectedPet = newGame.p1_monsters.filter(monster => monster.id === target).concat(newGame.p2_monsters.filter(monster => monster.id === target))[0]
-        let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
+    let affectedPet = newGame.p1_monsters.filter(monster => monster.id === target).concat(newGame.p2_monsters.filter(monster => monster.id === target))[0]
+    let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
+
+    if(subAbility.status !== null){
+        applyStatusEffect(subAbility, affectedPet, myPet);
+    }
+
+    if(subAbility.target === 'target' && subAbility.modifier !== null){
         affectedPet.currHp += subAbility.modifier * myPet.currAtk
 
         if(affectedPet.currHp <= 0){
@@ -181,6 +228,12 @@ async function applyAbility(newGame, subAbility, target){
 
 async function gameManager(nameTarget, newGame, mIDTurnOrder)
 {
+    // let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
+
+    // for (let key in myPet.buffs){
+    //     invokeStatusEffect(myPet , key, myPet.buffs[key])
+    // }
+    
     let subAbilities = await getSubAbilitiesBasedOnAbility(nameTarget[0])
     console.log(subAbilities)
     console.log("xxxtentacion")
