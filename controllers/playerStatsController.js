@@ -12,7 +12,7 @@ const getStats = async (req, res) => {
 }
 
 const updateStats = async (req, res) => {
-    const data = req.body; 
+    const data = req.body;   
     try {
         const player = await playerStats.getPlayerStats(data.uid);
         if (player) {

@@ -8,6 +8,8 @@ const corsConfig = {
     credentials : true,
 }
 
+
+
 app.use(cors(corsConfig))
 app.options('*', cors(corsConfig))
 app.use(express.json());
@@ -21,6 +23,7 @@ app.use('/stats', require('./routes/stats'));
 app.use('/pets', require('./routes/pets'))
 app.use('/monsters', require('./routes/monsters'));
 app.use('/ability', require('./routes/ability'));
+app.use('/addStarter', require('./routes/starterPets'));
 
 app.listen(3001, ()=>{
     console.log('server started on port 3001');

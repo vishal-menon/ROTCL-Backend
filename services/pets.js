@@ -1,4 +1,4 @@
-const { NVarChar, Decimal, Int } = require('mssql');
+const { NVarChar, Decimal, Int, Bit } = require('mssql');
 const Database = require('../models/database')
 
 const db = new Database()
@@ -15,8 +15,9 @@ const addPet = async (data) => {
     request.input('modifSpd', Decimal(3,2), data.modifSpd);
     request.input('modifDef', Decimal(3,2), data.modifDef);
     request.input('exp', Int(), data.exp);
+    request.input('inParty', Bit, data.inParty)
 
-    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, getdate())');
+    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, getdate(), @inParty)');
 }
 
 const searchPetsByPlayer = async (uid) => {
@@ -47,7 +48,6 @@ const updatePet = async (data) => {
     const request = await db.connect();
 
     request.input('mid', NVarChar(255), data.mid);
-    request.input('uid', NVarChar(255), data.uid);
     request.input('name', NVarChar(255), data.name);
     request.input('altName', NVarChar(255), data.altName);
     request.input('modifHp', Decimal(3,2), data.modifHp);
@@ -55,8 +55,9 @@ const updatePet = async (data) => {
     request.input('modifSpd', Decimal(3,2), data.modifSpd);
     request.input('modifDef', Decimal(3,2), data.modifDef);
     request.input('exp', Int(), data.exp);
+    request.input('inParty', Bit, data.inParty)
 
-    request.query('UPDATE Pets SET altname=@altname, modifHp=@modifHp, modifAtk=@modifAtk, modifSpd=@modifSpd, modifDef=@modifDef, exp=@exp')
+    request.query('UPDATE Pets SET altname=@altname, modifHp=@modifHp, modifAtk=@modifAtk, modifSpd=@modifSpd, modifDef=@modifDef, exp=@exp, inParty=@inParty WHERE mid=@mid')
 }
 
 
@@ -65,5 +66,4 @@ module.exports = {
     searchPetsByPlayer,
     searchPet,
     updatePet,
-
 }

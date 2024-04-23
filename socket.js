@@ -145,9 +145,7 @@ io.on('connection', socket => {
         io.emit("update user", usernameArray);
     });
 
-    socket.on("duel", (duelRequest, setBattle) => {
-
-    
+    socket.on("duel", (duelRequest, setBattle) => { 
 
         /*
         duelRequest = {
@@ -295,8 +293,7 @@ io.on('connection', socket => {
     
 })
 
-
-const PORT = process.env.PORT || 3502;
+const PORT = process.env.PORT || 3500;
 httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

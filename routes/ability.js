@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const AbilityController = require('../controllers/abilitiesController');
+const AssignAbilityController = require('../controllers/assignAbilityController')
 
 router.route('/')
     .post(AbilityController.addAbility)
@@ -10,7 +11,10 @@ router.route('/pet')
 router.route('/pet/:mid')
     .get(AbilityController.getPetAbilities)
 
-router.route('/listofsub/:name')
+router.route('/pet/ability/assign')
+    .post(AssignAbilityController.assignRandomAbility)
+
+    router.route('/listofsub/:name')
     .get(AbilityController.getSubAbilitiesBasedOnAbility)
 
 router.route('/:name')

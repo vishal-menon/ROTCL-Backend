@@ -8,4 +8,5 @@ router.route('/')
 router.route('/:id')
     .get(PetsController.getPetsbyPlayer)
 
+
 module.exports = router

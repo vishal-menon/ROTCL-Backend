@@ -94,6 +94,21 @@ const getAbility = async (name) => {
     }
 }
 
+const getAbilityOnRarity = async (rarity) => {
+    try {
+        const request = await db.connect();
+
+        const result = await request
+            .input('rarity', NVarChar(255), rarity)
+            .query(
+                'SELECT * FROM Abilities WHERE rarity=@rarity'
+            );
+            return result.recordset;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 // get a Pet's abilities
 const getAbilitiesBasedOnPet = async (mid) => {
     try {
@@ -115,5 +130,7 @@ module.exports = {
     addPetAbility,
     getAbility,
     getAbilitiesBasedOnPet,
-    getSubAbilitiesBasedOnAbility
+    getSubAbilitiesBasedOnAbility,
+    addSubAbility,
+    getAbilityOnRarity
 }
