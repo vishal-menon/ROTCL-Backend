@@ -1,1 +1,1 @@
-select * from PetAbilities
+select * from SubAbilities

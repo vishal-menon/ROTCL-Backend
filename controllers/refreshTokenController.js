@@ -10,6 +10,9 @@ const handleRefreshToken = async (req, res) => {
     const player = await tokens.searchToken(refreshToken);
     if (!player) return res.sendStatus(403); //Forbidden
     //evaluate jwt
+
+    console.log("test");
+
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
@@ -18,7 +21,7 @@ const handleRefreshToken = async (req, res) => {
             const accessToken = jwt.sign(
                 {"uid" : decoded.uid},
                 process.env.ACCESS_TOKEN_SECRET,
-                {expiresIn: '5m'}
+                {expiresIn: '10s'}
             );
             res.json({accessToken: accessToken, uid: player.uid, hasReceivedStarters: player.hasReceivedStarters});
         }
