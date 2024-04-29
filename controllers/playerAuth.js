@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const handleLogin = async (req, res) => {
     const { uid, pwd } = req.body;
-    if (!uid || !pwd) return res.status(400).json({'message' : 
-    'Username and password are required.'});
+    if (!uid || !pwd) return res.status(400).json({'message' : 'Username and password are required.'});
     const foundPlayer = await player.readPlayer(uid);
     if (!foundPlayer) return res.sendStatus(401); //Unauthorized
 
@@ -27,8 +26,7 @@ const handleLogin = async (req, res) => {
         if (prevToken) tokens.updateToken({"uid": foundPlayer.uid, "token": refreshToken});
         else tokens.addToken({"uid": foundPlayer.uid, "token": refreshToken});
         res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
-        res.json({'accessToken': accessToken, 'uid': foundPlayer.uid, 'hasReceivedStarters': 
-            foundPlayer.hasReceivedStarters})
+        res.json({accessToken: accessToken, hasReceivedStarters: foundPlayer.hasReceivedStarters, uid: foundPlayer.uid})
     } else {
         res.sendStatus(401);
     }

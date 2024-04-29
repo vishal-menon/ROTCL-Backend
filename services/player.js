@@ -1,4 +1,4 @@
-const { NVarChar, Int } = require('mssql')
+const { NVarChar, Int, Bit } = require('mssql')
 const Database = require('../models/database')
 
 const db = new Database()
@@ -33,9 +33,10 @@ const updatePlayer = async (uid, data) => {
     request.input('uid', NVarChar(255), uid);
     request.input('pwdHash', NVarChar(255), data.pwdHash);
     request.input('email', NVarChar(255), data.email); 
+    request.input('hasReceivedStarters', Bit, data.hasReceivedStarters);
 
     const result = await request.query(
-        'UPDATE Players SET uid=@uid, pwdHash=@pwdHash, email=@email'
+        'UPDATE Players SET pwdHash=@pwdHash, email=@email, hasReceivedStarters=@hasReceivedStarters WHERE uid=@uid'
     );
 
     return result.rowsAffected[0];

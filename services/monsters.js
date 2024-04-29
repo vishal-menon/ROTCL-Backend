@@ -42,7 +42,7 @@ const addMonster = async (data) => {
         request.input('baseSpd', int, data.baseSpd);
         request.input('baseDef', int, data.baseDef);
         request.input('baseStamina', int, data.baseStamina);
-        request.input('imgPath', NVarChar(255), data.imgPath);
+        request.input('imgPath', NVarChar(255), 'https://lh3.googleusercontent.com/d/'+data.imgPath);
 
         request.query(
             'INSERT INTO MonstersIndex VALUES (@name, @rarity, @baseHp, @baseAtk, @baseSpd, @baseDef, @baseStamina, @imgPath)'

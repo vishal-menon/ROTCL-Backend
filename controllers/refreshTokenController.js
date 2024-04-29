@@ -1,6 +1,7 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const tokens = require('../services/tokens')
+const players = require('../services/player')
 
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
@@ -8,6 +9,7 @@ const handleRefreshToken = async (req, res) => {
     if (!cookies?.jwt) return res.sendStatus(401);
     const refreshToken = cookies.jwt;
     const player = await tokens.searchToken(refreshToken);
+    const playerDetails = await players.readPlayer(player.uid);
     if (!player) return res.sendStatus(403); //Forbidden
     //evaluate jwt
     jwt.verify(
@@ -20,7 +22,7 @@ const handleRefreshToken = async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 {expiresIn: '5m'}
             );
-            res.json({accessToken: accessToken, uid: player.uid, hasReceivedStarters: player.hasReceivedStarters});
+            res.json({accessToken: accessToken, uid: player.uid, hasReceivedStarters: playerDetails.hasReceivedStarters});
         }
     );
 }

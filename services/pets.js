@@ -16,8 +16,9 @@ const addPet = async (data) => {
     request.input('modifDef', Decimal(3,2), data.modifDef);
     request.input('exp', Int(), data.exp);
     request.input('inParty', Bit, data.inParty)
+    request.input('isTrained', Bit, 0)
 
-    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @exp, getdate(), @inParty)');
+    request.query('INSERT INTO Pets VALUES (@mid, @uid, @name, @altName, @modifHp, @modifAtk, @modifSpd, @modifDef, @exp, getdate(), @inParty, @isTrained)');
 }
 
 const searchPetsByPlayer = async (uid) => {
@@ -26,10 +27,10 @@ const searchPetsByPlayer = async (uid) => {
     const result = await request
         .input('uid', NVarChar(255), uid)
         .query(
-            'SELECT * FROM Pets WHERE uid=@uid'
+            'SELECT * FROM Pets INNER JOIN MonstersIndex ON Pets.name=MonstersIndex.name WHERE uid=@uid'
         );
     
-    return result.recordsets;
+    return result.recordsets[0];
 }
 
 const searchPet = async (mid) => {
