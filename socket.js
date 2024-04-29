@@ -196,10 +196,6 @@ io.on('connection', socket => {
 
         let p1_monsters = monsters_p1.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
         let p2_monsters = monsters_p2.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
-
-        console.log(new_p1_monsters)
-        console.log("\n\n\n")
-        console.log(p1_monsters)
         
         //mIDTurnOrder
         const allmon = new_p1_monsters.concat(new_p2_monsters) 
@@ -257,11 +253,11 @@ io.on('connection', socket => {
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
-            if(socketService.isGameFinished(currMatch) === 1){
+            if(await socketService.isGameFinished(currMatch, duelRequest) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
             }
-            else if(socketService.isGameFinished(currMatch) === 2){
+            else if(await socketService.isGameFinished(currMatch, duelRequest) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
             }
@@ -278,11 +274,11 @@ io.on('connection', socket => {
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
-            if(socketService.isGameFinished(currMatch) === 1){
+            if(await socketService.isGameFinished(currMatch, duelRequest) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
             }
-            else if(socketService.isGameFinished(currMatch) === 2){
+            else if(await socketService.isGameFinished(currMatch, duelRequest) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
             }

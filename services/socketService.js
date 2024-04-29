@@ -1,6 +1,7 @@
 const { response } = require('express');
 const petsController = require('../controllers/petsController')
 const Monster = require('../models/monster.js');
+const { getPlayerStats, updatePlayerStats } = require('./playerStats.js')
 
 async function getSubAbilitiesBasedOnAbility(abilityName){
 
@@ -81,7 +82,20 @@ function leaveMatch(pSocket, matchID){
     pSocket.leave(matchID);
 }
 
-function isGameFinished(currMatch){
+async function giveRewards(uid){
+
+   const playerStats = await getPlayerStats(uid);
+
+   console.log(playerStats)
+
+   playerStats.exp = parseInt(playerStats.exp) + 10;
+
+   await updatePlayerStats(playerStats);
+   console.log("done")
+
+}
+
+async function isGameFinished(currMatch, duelRequest){
 
     let p1deathCount = 0
     let p2deathCount = 0
@@ -99,9 +113,15 @@ function isGameFinished(currMatch){
     });
 
     if(p1deathCount >= 3)
+    {
+        await giveRewards(duelRequest.opponent)
         return 2
+    }
     else if(p2deathCount >= 3)
+    {
+        await giveRewards(duelRequest.player)
         return 1
+    }
     else
         return 0
 
@@ -140,11 +160,17 @@ function getMonsterByID(pID, newGame)
     return res
 }
 
-function onTurnStatusEffect(newGame){
+function onTurnStatusEffect(newGame, mIDTurnOrder){
     let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
 
+    let isStunned = false
+
     for (let key in myPet.buffs){
-        invokeStatusEffect(myPet , key, myPet.buffs[key])
+        invokeStatusEffect(myPet , key, myPet.buffs[key], isStunned)
+    }
+
+    if(isStunned){
+        changeTurn(newGame, mIDTurnOrder)
     }
 }
 
@@ -168,11 +194,11 @@ function changeTurn(newGame, mIDTurnOrder)
 
     }
 
-    onTurnStatusEffect(newGame)
+    onTurnStatusEffect(newGame, mIDTurnOrder)
 
 }
 
-async function invokeStatusEffect(myPet, statusName, details){
+async function invokeStatusEffect(myPet, statusName, details, isStunned){
 
     if(details.turns <= 0)
     {
@@ -181,6 +207,10 @@ async function invokeStatusEffect(myPet, statusName, details){
     }
 
     console.log(statusName + " has been invoked on " + myPet.name)
+
+    if(statusName === 'stun'){
+        isStunned = true;
+    }
 
     myPet.currHp += details.value
 
@@ -200,7 +230,10 @@ async function applyStatusEffect(subAbility, affectedPet, myPet){
     if(subAbility.modifier !== null)
         abilityVal = subAbility.modifier * myPet.currAtk;
 
-    affectedPet.buffs[`'${subAbility.status}'`] = { value: abilityVal, turns: subAbility.turns };
+    if(subAbility.target === 'target')
+        affectedPet.buffs[`'${subAbility.status}'`] = { value: abilityVal, turns: subAbility.turns };
+    else if(subAbility.target === 'self')
+        myPet.buffs[`'${subAbility.status}'`] = { value: abilityVal, turns: subAbility.turns };
 
 }
 
@@ -221,8 +254,11 @@ async function applyAbility(newGame, subAbility, target){
             affectedPet.status = 'fainted'
         }
     }
+    else if (subAbility.modifier !== null){
+        affectedPet.currHp += subAbility.modifier * myPet.hp
+    }
 
-    console.log(newGame)
+    //console.log(newGame)
 
 }
 
@@ -242,7 +278,7 @@ async function gameManager(nameTarget, newGame, mIDTurnOrder)
         applyAbility(newGame, sub, nameTarget[1])
     });
 
-    console.log(newGame)
+    //console.log(newGame)
 
         // newGame.p1_monsters.forEach(pet => {
         //     if(pet.id === parseInt(nameTarget[1])){
