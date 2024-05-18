@@ -1,61 +1,69 @@
-const Abilities = require('../services/abilities')
+const supabase = require('../models/database');
 
 // get ability details
 const getAbility = async (req, res) => {
-    const response = await Abilities.getAbility(req.params?.name);
+    if (!req.params?.name) return res.send(400).json({message: 'name not specified'});
+    
+    const response = await supabase.from('abilities').select('*').ilike('name', req.params.name);
 
-    if (response ) {
-        res.status(200).json(response)
-    } else {
-        res.sendStatus(404);
-    }
+    if (response.error) return res.status(response.status).json({message: response.error});
+
+    if (!response.data.length) return res.sendStatus(404); 
+
+    return res.json(response.data);
 }
 
 const getSubAbilitiesBasedOnAbility = async(req, res) => {
-    const response = await Abilities.getSubAbilitiesBasedOnAbility(req.params?.name)
+    if (!req.params?.name) return res.send(400).json({message: 'name not specified'});
+    
+    const {data, error, status} = await supabase.from('ability_sub_mapping').select('sub_abilities(*)').ilike('ability', req.params.name);
+    
+    if (error) return res.status(status).json({message: error})
 
-    if (response) {
-        res.status(200).json(response)
-    } else {
-        res.sendStatus(404);
-    }
+    return res.status(status).json(data)
 }
 
 // get abilites for a pet
 const getPetAbilities = async (req, res) => {
-    const response = await Abilities.getAbilitiesBasedOnPet(req.params?.mid);
+    if (!req.params?.mid) res.send(400).json({message: 'mid not specified'});
 
-    if (response ) {
-        res.status(200).json(response)
-    } else {
-        res.sendStatus(404);
-    }
+    const {data, error, status} = await supabase.from('pet_abilities').select('*').eq('mid', req.params.mid);
+
+    if (error) res.status(status).json({message: error}); 
+
+    res.status(status).json(data);
 }
 
 // adding an ability to Abilities Table
 const addAbility = async (req, res) => {
-    try {
-        await Abilites.addAbility(req.body);
-        res.sendStatus(204);
-    } catch (error) {
-        res.status(500).json({'message': error.message});
-    }
+    const body = req.body;
+
+    if (!body) return res.send(400).json({message: 'body empty'});
+    
+    const {data, error, status} = await supabase.from('abilties').insert({name: body.name, rarity: body.rarity, stamina: body.stamina, target: body.target});
+
+    if (error) res.status(status).json({message: error});
+
+    res.status(status).json(data);
 }
 
 // assigning an ability to a pet
 const addPetAbility = async (req, res) => {
-    try {
-        await Abilites.addPetAbility(req.body);
-        res.sendStatus(200);
-    } catch (error) {
-        res.status(500).json({'message': error.message});
-    }
+    const body = req.body;
+
+    if (!body) return res.send(400).json({message: 'body empty'});
+
+    const {data, error, status} = await supabase.from('pet_abilities').insert({mid: body.mid, name: body.name});
+
+    if (error) res.status(status).json({message: error});
+
+    res.status(status).json(data);
 }
 
 module.exports = {
     getAbility,
-    getPetAbilities,
     getSubAbilitiesBasedOnAbility,
+    getPetAbilities,
     addAbility,
     addPetAbility
 }

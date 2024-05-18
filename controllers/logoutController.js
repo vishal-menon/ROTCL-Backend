@@ -1,19 +1,25 @@
-const tokens = require('../services/tokens');
+const supabase = require('../models/database');
 
-const handleLogout = (req, res) => {
+const handleLogout = async (req, res) => {
     const cookies = req.cookies;
 
     if(!cookies?.jwt) return res.sendStatus(204);
+    
     const refreshToken = cookies.jwt;
 
-    const player = tokens.searchToken(refreshToken);
+    let response = await supabase.from('player_refresh_tokens').select('*').eq('jwt', refreshToken);
 
-    if (!player) {
+    if (response.error) return res.status(response.status).json({message: response.error});
+
+    if (!response.data.length) {
         res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure : true});
-        return res.sendStatus(204);
+        res.sendStatus(204);
     }
 
-    tokens.deleteToken(refreshToken);
+    response = await supabase.from(player_refresh_tokens).delete().eq('token', refreshToken);
+
+    if (response.error) return res.status(response.status).json({message: response.error});
+
     res.clearCookie('jwt', {httpOnly : true, sameSite: 'None', secure : true});
     res.sendStatus(204);
 }

@@ -1,5 +1,4 @@
-const player = require('../services/player');
-const playerStats = require('../services/playerStats');
+const supabase = require('../models/database');
 const bcrypt = require('bcrypt')
 
 const createPlayer = async (req, res) => {
@@ -9,26 +8,40 @@ const createPlayer = async (req, res) => {
         {'message' : 'UID and Password are required.'}
     )
 
-    const isDuplicate = await player.readPlayer(uid)
+    let response = await supabase.from('players').select('uid').ilike('uid', uid);
 
-    if(isDuplicate) return res.sendStatus(409);
-    
+    if (response.error) return res.status(response.status).json({message: response.error});
+
+    if (response.data.length) return res.status(409).json({message: 'uid already exists.'});
+
     try{
         const hashedPwd = await bcrypt.hash(pwd, 10)
+        
         const newPlayer = {
             uid : uid,
             pwdHash : hashedPwd,
             email : email,
+            join_date: new Date(),
+            has_received_starters: false
         }
+
         const newPlayerStats = {
             uid : uid,
             exp : 0,
             wins : 0,
             losses : 0 
         } 
-        const data = await player.addPlayer(newPlayer)
-        await playerStats.addPlayerStats(newPlayerStats)
+
+        response = await supabase.from('players').insert(newPlayer);
+
+        if (response.error) return res.status(response.status).json({message: response.error});
+
+        response = await supabase.from('player_stats').insert(newPlayerStats);
+
+        if (response.error) return res.status(response.status).json({message: response.error});
+        
         res.status(201).json({'success' : `New user ${uid} created.`});
+
     } catch(err) {
         res.status(500).json({'message' : err.message});
     }
