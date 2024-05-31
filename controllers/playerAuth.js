@@ -10,7 +10,9 @@ const handleLogin = async (req, res) => {
     
     let response = await supabase.from('players').select('*').ilike('uid', uid);
     
-    if (!response.data.length) return res.sendStatus(401); //Unauthorized
+    console.log(response)
+
+    if (!response?.data?.length) return res.sendStatus(401); //Unauthorized
 
     const foundPlayer = response.data[0];
 

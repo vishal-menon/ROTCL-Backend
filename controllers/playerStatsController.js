@@ -1,6 +1,6 @@
 const supabase = require('../models/database');
 
-const getStats = async (req, res) => {   
+const getPlayerStats = async (req, res) => {   
     const uid = req.params?.uid;
     
     if (!uid) return res.status(400).json({message : 'uid missing'});
@@ -14,7 +14,7 @@ const getStats = async (req, res) => {
     return res.status(response.status).json(response.data[0]);
 }
 
-const updateStats = async (req, res) => {
+const updatePlayerStats = async (req, res) => {
     const uid = req.params?.uid;
     
     const body = req.body;
@@ -37,7 +37,7 @@ const updateStats = async (req, res) => {
 }
 
 module.exports = {
-    getStats,
-    updateStats
+    getPlayerStats,
+    updatePlayerStats
 }
 

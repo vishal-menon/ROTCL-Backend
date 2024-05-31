@@ -2,9 +2,9 @@ const router = require('express').Router()
 const playerStatsController = require('../controllers/playerStatsController');
 
 router.route('/:uid')
-        .put(playerStatsController.updateStats)
+        .put(playerStatsController.updatePlayerStats)
 
 router.route('/:uid')
-        .get(playerStatsController.getStats)
+        .get(playerStatsController.getPlayerStats)
 
 module.exports = router

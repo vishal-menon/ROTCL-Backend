@@ -183,6 +183,8 @@ io.on('connection', socket => {
         let p1mon = await socketService.getPlayerMonsters(duelRequest.player);
         let p2mon = await socketService.getPlayerMonsters(duelRequest.opponent);
         
+        console.log("I am p1mon")
+        console.log(p1mon.map((m)=>{console.log(m)}))
 
         // console.log(p1mon)
         // console.log("console.log dat shit!")
@@ -191,8 +193,8 @@ io.on('connection', socket => {
 
         const matchID = uuidv4();
 
-        let new_p1_monsters = p1mon.map((m) => {return new Monster(m.baseHp, m.altName, 'alive', m.abilities, m.mid, m.uid, m.baseAtk, m.baseDef, m.baseSpd, m.baseStamina, m.modifHp, m.modifAtk, m.modifDef, m.modifSpd, m.imgPath)});
-        let new_p2_monsters = p2mon.map((m) => {return new Monster(m.baseHp, m.altName, 'alive', m.abilities, m.mid, m.uid, m.baseAtk, m.baseDef, m.baseSpd, m.baseStamina, m.modifHp, m.modifAtk, m.modifDef, m.modifSpd, m.imgPath)});
+        let new_p1_monsters = p1mon.map((m) => {return new Monster(m.base_hp, m.alt_name, 'alive', m.abilities, m.mid, m.uid, m.base_atk, m.base_def, m.base_spd, m.base_stamina, m.modif_hp, m.modif_atk, m.modif_def, m.modif_spd, m.img_path)});
+        let new_p2_monsters = p2mon.map((m) => {return new Monster(m.base_hp, m.alt_name, 'alive', m.abilities, m.mid, m.uid, m.base_atk, m.base_def, m.base_spd, m.base_stamina, m.modif_hp, m.modif_atk, m.modif_def, m.modif_spd, m.img_path)});
 
         let p1_monsters = monsters_p1.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
         let p2_monsters = monsters_p2.map((m) => {return new Monster(m.hp, m.name, m.status, m.ability, m.id, m.owner)})
@@ -214,6 +216,8 @@ io.on('connection', socket => {
 
         //Start Game.
        // console.log(activeGames);
+       console.log("newGame.p1_monsters")
+       console.log(newGame.p1_monsters)
         
         //Init State
         playerSocket.emit("setState", [newGame.p1_monsters, newGame.p2_monsters, newGame.turn])
