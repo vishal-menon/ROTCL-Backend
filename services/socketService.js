@@ -54,18 +54,16 @@ async function getAbilitiesByMID(mid){
 
 async function getPlayerMonsters(uid){
 
-    let pets = await fetch(`http://localhost:3001/pets/player/${uid}`, {
+    let pets
+    await fetch(`http://localhost:3001/pets/player/${uid}`, {
         method: 'GET'
       })
     .then(response => response.json())
     .then(data => {
-        xpets = data.filter((pet) => {
-            console.log(pet)
-            return pet.in_party
-        });
-
-        return xpets;
+        pets = data.filter((pet) => pet.in_party)
     });
+
+    console.log(pets);
 
    // console.log('akrambikram')
     //console.log(pets)

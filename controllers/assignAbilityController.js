@@ -1,16 +1,12 @@
 const supabase = require('../models/database');
 
-const AbilitySlotMap = {
-    'Common' : 2,
-    'Uncommon': 2,
-    'Rare': 3,
-    'Epic': 3,
-    'Legendary': 4,
-    'Divine': 4,
-}
-
 const assignRandomAbility = async (req, res) => {
-    const {mid, rarity} = req.body
+    
+    const rarity = req.params.rarity;
+    
+    const mid = req.params.mid;
+
+    console.log(mid, rarity);
 
     if (!mid || !rarity) return res.status(400).json({message: 'mid or rarity missing.'});
     
@@ -20,24 +16,17 @@ const assignRandomAbility = async (req, res) => {
     
     let abilities = response.data;
 
-    const slots = AbilitySlotMap[rarity];
+    const currIdx = Math.floor(Math.random() * abilities.length); 
+    
+    const currAbility = abilities[currIdx];
 
-    let selectAbilities = [];
-    let currIdx;
-    let currAbility;
-
-    while (selectAbilities.length !== slots) {
-        currIdx = Math.floor(Math.random() * abilities.length); 
-        currAbility = abilities[currIdx];
-        selectAbilities.push({'mid': mid, 'name': currAbility.name});
-        abilities = abilities.filter(ability => ability.name !== currAbility.name);
-    }
+    console.log(currAbility);
     
-    response = await supabase.from('pet_abilities').insert(selectAbilities);
+    response = await supabase.from('pet_abilities').insert({'mid': mid, 'name': currAbility.name});
     
-    if (response.error) res.status(response.status).json({message: response.error});
+    if (response.error) return res.status(response.status).json({message: response.error});
     
-    res.status(response.status).json({message: response.statusText});
+    return res.status(response.status).json(currAbility);
 }
 
 module.exports = { assignRandomAbility };

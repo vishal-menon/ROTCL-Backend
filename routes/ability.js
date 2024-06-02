@@ -11,7 +11,10 @@ router.route('/pet')
 router.route('/pet/:mid')
     .get(AbilityController.getPetAbilities)
 
-router.route('/pet/assignAbility')
+router.route('/petAll/:mid')
+    .get(AbilityController.getAllAbilityDetailsPet)
+
+router.route('/pet/assignAbility/:rarity/:mid')
     .post(AssignAbilityController.assignRandomAbility)
 
 router.route('/listofsub/:name')

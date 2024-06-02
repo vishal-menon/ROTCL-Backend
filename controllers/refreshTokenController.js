@@ -9,10 +9,12 @@ const handleRefreshToken = async (req, res) => {
     
     const refreshToken = cookies.jwt;
 
-    let {data ,error, status, statusText} = await supabase.from('player_refresh_tokens').select('players(uid, has_received_starters))').eq('token', refreshToken);
+    let {data ,error, status, statusText} = await supabase.from('player_refresh_tokens').select('players(uid, has_received_starters)').eq('token', refreshToken);
 
     if (error) return res.status(status).json({message: statusText});
     
+    console.log(data);
+
     if (!data.length) return res.sendStatus(403); //Forbidden
 
     const playerDetails = data[0].players;

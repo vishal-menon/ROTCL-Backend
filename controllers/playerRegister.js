@@ -19,7 +19,7 @@ const createPlayer = async (req, res) => {
         
         const newPlayer = {
             uid : uid,
-            pwdHash : hashedPwd,
+            pwd_hash : hashedPwd,
             email : email,
             join_date: new Date(),
             has_received_starters: false

@@ -13,10 +13,32 @@ const getAbility = async (req, res) => {
     return res.json(response.data);
 }
 
+const getAllAbilityDetailsPet = async(req, res) => {
+    if (!req.params?.mid) return res.send(400).json({message: 'Pet not specified'});
+
+    const mid = req.params.mid;
+    
+    const {data, error, status} = await supabase.rpc('get_all_pet_ability_details', {'given_mid' : mid}).select('*');
+    
+    if (error) return res.status(status).json({message: error})
+
+    let abilityDetails = {};
+
+    data.forEach(ability => {
+        const name = ability.ability;
+        delete ability['ability'];
+        delete ability['mid'];
+        if (!abilityDetails[name]) abilityDetails[name] = [ability];
+        else abilityDetails[name].push(ability);
+    })
+    
+    return res.status(status).json(abilityDetails)
+}
+
 const getSubAbilitiesBasedOnAbility = async(req, res) => {
     if (!req.params?.name) return res.send(400).json({message: 'name not specified'});
     
-    const {data, error, status} = await supabase.from('ability_sub_mapping').select('sub_abilities(*)').ilike('ability', req.params.name);
+    const {data, error, status} = await supabase.from('ability_sub_mapping').select('ability, sub_abilities(*)').ilike('ability', req.params.name);
     
     if (error) return res.status(status).json({message: error})
 
@@ -63,6 +85,7 @@ const addPetAbility = async (req, res) => {
 module.exports = {
     getAbility,
     getSubAbilitiesBasedOnAbility,
+    getAllAbilityDetailsPet,
     getPetAbilities,
     addAbility,
     addPetAbility

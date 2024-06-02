@@ -7,7 +7,7 @@ const handleLogout = async (req, res) => {
     
     const refreshToken = cookies.jwt;
 
-    let response = await supabase.from('player_refresh_tokens').select('*').eq('jwt', refreshToken);
+    let response = await supabase.from('player_refresh_tokens').select('*').eq('token', refreshToken);
 
     if (response.error) return res.status(response.status).json({message: response.error});
 
@@ -16,7 +16,7 @@ const handleLogout = async (req, res) => {
         res.sendStatus(204);
     }
 
-    response = await supabase.from(player_refresh_tokens).delete().eq('token', refreshToken);
+    response = await supabase.from('player_refresh_tokens').delete().eq('token', refreshToken);
 
     if (response.error) return res.status(response.status).json({message: response.error});
 
