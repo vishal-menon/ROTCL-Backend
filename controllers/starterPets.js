@@ -1,5 +1,4 @@
 const supabase = require('../models/database');
-const bcrypt = require('bcrypt');
 
 const addStarterPets = async (req, res) => {
     const {uid, selectedPets} = req.body;
@@ -16,23 +15,17 @@ const addStarterPets = async (req, res) => {
 
     if (response.error) return res.status(response.status).json({message: response.error});
 
-    let petsToBeAdded = [];
-
     selectedPets.forEach(async pet => {
-        const hash = await bcrypt.hash(uid + pet + timestamp.toString(), 2);
         const petData = {
-            'mid' : hash,
             'uid' : uid,
             'name' : pet,
+            'birth_date': timestamp,
             'alt_name' : pet,
             'in_party': 1
         }
-        petsToBeAdded.push(petData);
-    });
-
-    response = await supabase.from('pets').insert(petsToBeAdded);
-    
-    if (response.error) return res.status(response.status).json({message: response.error});
+        response = await supabase.from('pets').insert(petData);
+        if (response.error) console.log(response.error);
+    })
     
     res.status(response.status).json({message: response.statusText});
 }
