@@ -115,6 +115,57 @@ async function giveRewards(uid){
 
 }
 
+async function giveRewards(winnerUID, loserUID){
+
+    // const playerStats = await getPlayerStats(uid);
+     
+      let winnerStats = await fetch(`http://localhost:3001/stats/${winnerUID}`, {
+          method: 'GET'
+      })
+      .then(response => response.json())
+      .then(data => {
+          return data;
+      })
+
+      let loserStats = await fetch(`http://localhost:3001/stats/${loserUID}`, {
+          method: 'GET'
+      })
+      .then(response => response.json())
+      .then(data => {
+          return data;
+      })
+  
+     
+  
+     winnerStats.exp = parseInt(winnerStats.exp) + Math.floor(Math.max((parseInt(loserStats.exp)-parseInt(winnerStats.exp))/3, 20));
+     loserStats.exp = parseInt(loserStats.exp) + Math.floor(Math.min((parseInt(winnerStats.exp)-parseInt(loserStats.exp))/3, -10));
+
+     winnerStats.wins = parseInt(winnerStats.wins) + 1;
+     loserStats.losses = parseInt(loserStats.losses) + 1;
+  
+     console.log(winnerStats)
+     console.log(loserStats)
+
+      await fetch(`http://localhost:3001/stats/${winnerUID}`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(winnerStats)
+      })
+
+      await fetch(`http://localhost:3001/stats/${loserUID}`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(loserStats)
+      })
+  
+     console.log("done")
+  
+  }
+
 async function isGameFinished(currMatch, duelRequest){
 
     let p1deathCount = 0
@@ -134,12 +185,12 @@ async function isGameFinished(currMatch, duelRequest){
 
     if(p1deathCount >= 3)
     {
-        await giveRewards(duelRequest.opponent)
+        await giveRewards(duelRequest.opponent, duelRequest.player)
         return 2
     }
     else if(p2deathCount >= 3)
     {
-        await giveRewards(duelRequest.player)
+        await giveRewards(duelRequest.player, duelRequest.opponent)
         return 1
     }
     else
