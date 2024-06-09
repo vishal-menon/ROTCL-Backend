@@ -49,7 +49,7 @@ const getSubAbilitiesBasedOnAbility = async(req, res) => {
 const getPetAbilities = async (req, res) => {
     if (!req.params?.mid) res.send(400).json({message: 'mid not specified'});
 
-    const {data, error, status} = await supabase.from('pet_abilities').select('*').eq('mid', req.params.mid);
+    const {data, error, status} = await supabase.from('pet_abilities').select('mid, name, abilities( name, rarity, stamina, target)').eq('mid', req.params.mid);
 
     if (error) res.status(status).json({message: error}); 
 
