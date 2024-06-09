@@ -36,8 +36,17 @@ const updatePlayerStats = async (req, res) => {
     return res.status(response.status).json({message: response.statusText});
 }
 
+const allPlayerStats = async (req, res) => {
+    const response = await supabase.from('player_stats').select('*').order('exp', {ascending: false});
+
+    if (response.error) return res.status(response.status).json({message: response.error});
+
+    return res.status(response.status).json(response.data);
+}
+
 module.exports = {
     getPlayerStats,
-    updatePlayerStats
+    updatePlayerStats,
+    allPlayerStats
 }
 
