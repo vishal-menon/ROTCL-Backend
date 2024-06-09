@@ -36,14 +36,14 @@ const users = {};
 
 io.on('connection', socket => {
     const numClients = io.engine.clientsCount;
-    console.log(numClients)
-    console.log(`User ${socket.id} connected!`)
+    //console.log(numClients)
+    //console.log(`User ${socket.id} connected!`)
 
     let currUserName 
 
     socket.on("join server", (username) => {
         //store username -> map it to socket.
-        console.log(username)
+        //console.log(username)
         currUserName = username
         users[username] = socket
 
@@ -66,7 +66,7 @@ io.on('connection', socket => {
            opponent : 'opponentUsername'
         };
         */
-        console.log(duelRequest.player + " has requested to duel " + duelRequest.opponent + "!")
+        //console.log(duelRequest.player + " has requested to duel " + duelRequest.opponent + "!")
 
         let playerSocketID = users[duelRequest.player].id;
         let oppSocketID = users[duelRequest.opponent].id;
@@ -94,9 +94,6 @@ io.on('connection', socket => {
         let p1mon = await socketService.getPlayerMonsters(duelRequest.player);
         let p2mon = await socketService.getPlayerMonsters(duelRequest.opponent);
 
-        console.log("I am p1mon")
-        console.log(p1mon.map((m)=>{console.log(m)}))
-
         const matchID = uuidv4();
 
         let new_p1_monsters = p1mon.map((m) => {return new Monster(m.base_hp, m.alt_name, 'alive', m.abilities, m.mid, m.uid, m.base_atk, m.base_def, m.base_spd, m.base_stamina, m.modif_hp, m.modif_atk, m.modif_def, m.modif_spd, m.img_path)});
@@ -108,8 +105,6 @@ io.on('connection', socket => {
             return {mid: m.id, speed : m.currSpd}
         }).sort((a, b) => b.speed - a.speed)
 
-        console.log(mIDTurnOrder)
-
         const newGame = new Game(matchID, new_p1_monsters, new_p2_monsters, mIDTurnOrder[0].mid);
         activeGames.set(matchID, newGame);
 
@@ -118,9 +113,6 @@ io.on('connection', socket => {
         oppSocket.join(matchID);
 
         //Start Game.
-       // console.log(activeGames);
-       console.log("newGame.p1_monsters")
-       console.log(newGame.p1_monsters)
         
         //Init State
         playerSocket.emit("setState", [newGame.p1_monsters, newGame.p2_monsters, newGame.turn])
@@ -153,9 +145,9 @@ io.on('connection', socket => {
         playerSocket.on("Ability", async nameTarget => {
             
             let currMatch = activeGames.get(matchID);
-            console.log("Game Manager - id : " + matchID)
+            //console.log("Game Manager - id : " + matchID)
             await socketService.gameManager(nameTarget, currMatch, mIDTurnOrder)
-            console.log(activeGames);
+            //console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
@@ -174,9 +166,9 @@ io.on('connection', socket => {
         oppSocket.on("Ability", async nameTarget => {
 
             let currMatch = activeGames.get(matchID);
-            console.log("Game Manager - id : " + matchID)
+            //console.log("Game Manager - id : " + matchID)
             await socketService.gameManager(nameTarget, currMatch, mIDTurnOrder)
-            console.log(activeGames);
+            //console.log(activeGames);
 
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])

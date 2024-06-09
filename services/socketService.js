@@ -28,8 +28,8 @@ async function getMonsterByName(name){
       })
     .then(response => response.json())
     .then(data => {
-        console.log("Monster by name : ")
-        console.log(data)
+        //console.log("Monster by name : ")
+        //console.log(data)
 
         return data[0]
     });
@@ -44,8 +44,8 @@ async function getAbilitiesByMID(mid){
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Abilities by MID : ")
-        console.log(data)
+        //console.log("Abilities by MID : ")
+        //console.log(data)
         return data;
     })
 
@@ -63,10 +63,10 @@ async function getPlayerMonsters(uid){
         pets = data.filter((pet) => pet.in_party)
     });
 
-    console.log(pets);
+    //console.log(pets);
 
-   // console.log('akrambikram')
-    //console.log(pets)
+   // //console.log('akrambikram')
+    ////console.log(pets)
 
     let modifiedPets = [];
 
@@ -77,8 +77,8 @@ async function getPlayerMonsters(uid){
         modifiedPets.push(modifiedPet);
     };
 
-    //console.log("Modified Pets")
-    //console.log(modifiedPets)
+    ////console.log("Modified Pets")
+    ////console.log(modifiedPets)
 
     return modifiedPets;
 }
@@ -99,7 +99,7 @@ async function giveRewards(uid){
         return data;
     })
 
-   console.log(playerStats)
+   //console.log(playerStats)
 
    playerStats.exp = parseInt(playerStats.exp) + 10;
 
@@ -111,7 +111,7 @@ async function giveRewards(uid){
     body: JSON.stringify(playerStats)
     })
 
-   console.log("done")
+   //console.log("done")
 
 }
 
@@ -143,8 +143,8 @@ async function giveRewards(winnerUID, loserUID){
      winnerStats.wins = parseInt(winnerStats.wins) + 1;
      loserStats.losses = parseInt(loserStats.losses) + 1;
   
-     console.log(winnerStats)
-     console.log(loserStats)
+     //console.log(winnerStats)
+     //console.log(loserStats)
 
       await fetch(`http://localhost:3001/stats/${winnerUID}`, {
       method: 'PUT',
@@ -162,7 +162,7 @@ async function giveRewards(winnerUID, loserUID){
       body: JSON.stringify(loserStats)
       })
   
-     console.log("done")
+     //console.log("done")
   
   }
 
@@ -171,7 +171,7 @@ async function isGameFinished(currMatch, duelRequest){
     let p1deathCount = 0
     let p2deathCount = 0
 
-    console.log(currMatch.gameId)
+    //console.log(currMatch.gameId)
 
     currMatch.p1_monsters.forEach(pet => {
         if(pet.status === 'fainted')
@@ -204,7 +204,7 @@ function isSocketInRoom(socketId, io) {
 
     if (socket) {
         const rooms = [...socket.rooms];
-        console.log(rooms)
+        //console.log(rooms)
         return rooms.length > 1 || (rooms.length === 1 && rooms[0] !== socket.id);
     } else {
         return false; // Socket not found
@@ -277,7 +277,7 @@ async function invokeStatusEffect(myPet, statusName, details, isStunned){
         return;
     }
 
-    console.log(statusName + " has been invoked on " + myPet.name)
+    //console.log(statusName + " has been invoked on " + myPet.name)
 
     if(statusName === 'stun'){
         isStunned = true;
@@ -310,14 +310,14 @@ async function applyStatusEffect(subAbility, affectedPet, myPet){
 
 async function applyAbility(newGame, subAbility, target){
 
-    console.log("applyAbility executed")
-    console.log(JSON.stringify(subAbility) + " - " + target)
+    //console.log("applyAbility executed")
+    //console.log(JSON.stringify(subAbility) + " - " + target)
 
     let affectedPet = newGame.p1_monsters.filter(monster => monster.id === target).concat(newGame.p2_monsters.filter(monster => monster.id === target))[0]
     let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
 
-    console.log("currHp of affected pet - before")
-    console.log(affectedPet)
+    //console.log("currHp of affected pet - before")
+    //console.log(affectedPet)
 
 
     if(subAbility.sub_abilities.status !== null){
@@ -337,10 +337,10 @@ async function applyAbility(newGame, subAbility, target){
         affectedPet.currHp += subAbility.sub_abilities.modifier * myPet.hp
     }
 
-    console.log("currHp of affected pet")
-    console.log(affectedPet)
+    //console.log("currHp of affected pet")
+    //console.log(affectedPet)
 
-    //console.log(newGame)
+    ////console.log(newGame)
 
 }
 
@@ -353,14 +353,14 @@ async function gameManager(nameTarget, newGame, mIDTurnOrder)
     // }
     
     let subAbilities = await getSubAbilitiesBasedOnAbility(nameTarget[0])
-    console.log(subAbilities)
-    console.log("xxxtentacion")
+    //console.log(subAbilities)
+    //console.log("xxxtentacion")
 
     subAbilities.forEach((sub) => {
         applyAbility(newGame, sub, nameTarget[1])
     });
 
-    //console.log(newGame)
+    ////console.log(newGame)
 
         // newGame.p1_monsters.forEach(pet => {
         //     if(pet.id === parseInt(nameTarget[1])){
