@@ -4,11 +4,13 @@ const petsController = require('../controllers/petsController')
 const Monster = require('../models/monster.js');
 const { getPlayerStats, updatePlayerStats } = require('../controllers/playerStatsController.js')
 
+const baseUrl = process.env.BACKEND_URL;
+
 async function getSubAbilitiesBasedOnAbility(abilityName){
 
     let result
     
-    await fetch(`http://localhost:3001/ability/listofsub/${abilityName}`, {
+    await fetch(`${baseUrl}/ability/listofsub/${abilityName}`, {
         method: 'GET'
       })
     .then(response => response.json())
@@ -23,7 +25,7 @@ async function getSubAbilitiesBasedOnAbility(abilityName){
 
 async function getMonsterByName(name){
 
-    let monsters = await fetch(`http://localhost:3001/monsters/${name}`, {
+    let monsters = await fetch(`${baseUrl}/monsters/${name}`, {
         method: 'GET'
       })
     .then(response => response.json())
@@ -39,7 +41,7 @@ async function getMonsterByName(name){
 
 async function getAbilitiesByMID(mid){
 
-    let abilities = await fetch(`http://localhost:3001/ability/pet/${mid}`, {
+    let abilities = await fetch(`${baseUrl}/ability/pet/${mid}`, {
         method: 'GET'
     })
     .then(response => response.json())
@@ -55,7 +57,7 @@ async function getAbilitiesByMID(mid){
 async function getPlayerMonsters(uid){
 
     let pets
-    await fetch(`http://localhost:3001/pets/player/${uid}`, {
+    await fetch(`${baseUrl}/pets/player/${uid}`, {
         method: 'GET'
       })
     .then(response => response.json())
@@ -91,7 +93,7 @@ async function giveRewards(uid){
 
   // const playerStats = await getPlayerStats(uid);
    
-    let playerStats = await fetch(`http://localhost:3001/stats/${uid}`, {
+    let playerStats = await fetch(`${baseUrl}/stats/${uid}`, {
         method: 'GET'
     })
     .then(response => response.json())
@@ -103,7 +105,7 @@ async function giveRewards(uid){
 
    playerStats.exp = parseInt(playerStats.exp) + 10;
 
-    await fetch(`http://localhost:3001/stats/${uid}`, {
+    await fetch(`${baseUrl}/stats/${uid}`, {
     method: 'PUT',
     headers: {
         'Content-Type': 'application/json'
@@ -119,7 +121,7 @@ async function giveRewards(winnerUID, loserUID){
 
     // const playerStats = await getPlayerStats(uid);
      
-      let winnerStats = await fetch(`http://localhost:3001/stats/${winnerUID}`, {
+      let winnerStats = await fetch(`${baseUrl}/stats/${winnerUID}`, {
           method: 'GET'
       })
       .then(response => response.json())
@@ -127,7 +129,7 @@ async function giveRewards(winnerUID, loserUID){
           return data;
       })
 
-      let loserStats = await fetch(`http://localhost:3001/stats/${loserUID}`, {
+      let loserStats = await fetch(`${baseUrl}/stats/${loserUID}`, {
           method: 'GET'
       })
       .then(response => response.json())
@@ -146,7 +148,7 @@ async function giveRewards(winnerUID, loserUID){
      //console.log(winnerStats)
      //console.log(loserStats)
 
-      await fetch(`http://localhost:3001/stats/${winnerUID}`, {
+      await fetch(`${baseUrl}/stats/${winnerUID}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json'
@@ -154,7 +156,7 @@ async function giveRewards(winnerUID, loserUID){
       body: JSON.stringify(winnerStats)
       })
 
-      await fetch(`http://localhost:3001/stats/${loserUID}`, {
+      await fetch(`${baseUrl}/stats/${loserUID}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json'
