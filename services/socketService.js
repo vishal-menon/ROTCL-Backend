@@ -344,6 +344,25 @@ async function applyAbility(newGame, subAbility, target){
 
 }
 
+function roundUpAllHealth(newGame)
+{
+    newGame.p1_monsters.forEach(monster => {
+
+        monster.currHp = Math.ceil(monster.currHp)
+
+        if(monster.currHp >= monster.hp){monster.currHp = monster.hp}
+        
+    });
+
+    newGame.p2_monsters.forEach(monster => {
+
+        monster.currHp = Math.ceil(monster.currHp)
+
+        if(monster.currHp >= monster.hp){monster.currHp = monster.hp}
+        
+    });
+}
+
 async function gameManager(nameTarget, newGame, mIDTurnOrder)
 {
     // let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
@@ -384,6 +403,7 @@ async function gameManager(nameTarget, newGame, mIDTurnOrder)
 
         
         changeTurn(newGame, mIDTurnOrder);  
+        roundUpAllHealth(newGame)
 }
 
 module.exports = {
