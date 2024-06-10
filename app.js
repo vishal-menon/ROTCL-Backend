@@ -1,5 +1,5 @@
 // Run socket.js
- require('./socket');
+require('./socket');
 
 // Run server.js
 require('./server');

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  backend:
+    image: rotcl-backend:latest
+    restart: always
+    ports:
+      - 3001:3001
+      - 3500:3500
+
+  frontend:
+    image: rotcl-frontend:latest
+    ports:
+      - 3000:80
+    depends_on:
+      - backend
