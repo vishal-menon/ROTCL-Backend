@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon .",
-    "devsocket": "nodemon app2.js"
+    "devsocket": "nodemon app2.js",
+    "devboth": "nodemon orgapp.js"
   },
   "keywords": [],
   "author": "",
