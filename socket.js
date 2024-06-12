@@ -114,16 +114,18 @@ io.on('connection', socket => {
         playerSocket.emit("setState", [newGame.p1_monsters, newGame.p2_monsters, newGame.turn])
         oppSocket.emit("setState", [newGame.p2_monsters, newGame.p1_monsters, newGame.turn])
 
-        playerSocket.on("disconnect", (reason) => {
+        playerSocket.on("disconnect", async (reason) => {
             oppSocket.emit("hasWon", true)
             socketService.leaveMatch(playerSocket, matchID);
             playerSocket.removeAllListeners("Ability");
+            await socketService.giveRewards(duelRequest.opponent, duelRequest.player)
         }) 
 
-        oppSocket.on("disconnect", (reason) => {
+        oppSocket.on("disconnect", async (reason) => {
             playerSocket.emit("hasWon", true)
             socketService.leaveMatch(oppSocket, matchID);
             oppSocket.removeAllListeners("Ability");
+            await socketService.giveRewards(duelRequest.player, duelRequest.opponent)
         }) 
         
         playerSocket.on("exitMatch", () => {

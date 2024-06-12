@@ -30,9 +30,6 @@ async function getMonsterByName(name){
       })
     .then(response => response.json())
     .then(data => {
-        //console.log("Monster by name : ")
-        //console.log(data)
-
         return data[0]
     });
 
@@ -46,8 +43,6 @@ async function getAbilitiesByMID(mid){
     })
     .then(response => response.json())
     .then(data => {
-        //console.log("Abilities by MID : ")
-        //console.log(data)
         return data;
     })
 
@@ -65,11 +60,6 @@ async function getPlayerMonsters(uid){
         pets = data.filter((pet) => pet.in_party)
     });
 
-    //console.log(pets);
-
-   // //console.log('akrambikram')
-    ////console.log(pets)
-
     let modifiedPets = [];
 
     for(let pet of pets) {
@@ -79,8 +69,6 @@ async function getPlayerMonsters(uid){
         modifiedPets.push(modifiedPet);
     };
 
-    ////console.log("Modified Pets")
-    ////console.log(modifiedPets)
 
     return modifiedPets;
 }
@@ -91,7 +79,6 @@ function leaveMatch(pSocket, matchID){
 
 async function giveRewards2(uid){
 
-  // const playerStats = await getPlayerStats(uid);
    
     let playerStats = await fetch(`${baseUrl}/stats/${uid}`, {
         method: 'GET'
@@ -101,7 +88,6 @@ async function giveRewards2(uid){
         return data;
     })
 
-   //console.log(playerStats)
 
    playerStats.exp = parseInt(playerStats.exp) + 10;
 
@@ -120,7 +106,6 @@ async function giveRewards2(uid){
 async function giveRewards(winnerUID, loserUID){
 
     console.log("started rewarding")
-    // const playerStats = await getPlayerStats(uid);
      
       let winnerStats = await fetch(`${baseUrl}/stats/${winnerUID}`, {
           method: 'GET'
@@ -146,8 +131,6 @@ async function giveRewards(winnerUID, loserUID){
      winnerStats.wins = parseInt(winnerStats.wins) + 1;
      loserStats.losses = parseInt(loserStats.losses) + 1;
   
-     //console.log(winnerStats)
-     //console.log(loserStats)
 
       await fetch(`${baseUrl}/stats/${winnerUID}`, {
       method: 'PUT',
@@ -165,7 +148,6 @@ async function giveRewards(winnerUID, loserUID){
       body: JSON.stringify(loserStats)
       })
   
-     //console.log("done")
      console.log("done rewarding")
   
   }
@@ -174,8 +156,6 @@ function isGameFinished(currMatch, duelRequest){
 
     let p1deathCount = 0
     let p2deathCount = 0
-
-    //console.log(currMatch.gameId)
 
     currMatch.p1_monsters.forEach(pet => {
         if(pet.status === 'fainted')
@@ -206,7 +186,6 @@ function isSocketInRoom(socketId, io) {
 
     if (socket) {
         const rooms = [...socket.rooms];
-        //console.log(rooms)
         return rooms.length > 1 || (rooms.length === 1 && rooms[0] !== socket.id);
     } else {
         return false; // Socket not found
@@ -239,7 +218,7 @@ function onTurnStatusEffect(newGame, mIDTurnOrder){
     let isStunned = false
 
     for (let key in myPet.buffs){
-        invokeStatusEffect(myPet , key, myPet.buffs[key], isStunned)
+        isStunned |= invokeStatusEffect(myPet , key, myPet.buffs[key], isStunned)
     }
 
     if(isStunned){
@@ -271,7 +250,7 @@ function changeTurn(newGame, mIDTurnOrder)
 
 }
 
-async function invokeStatusEffect(myPet, statusName, details, isStunned){
+async function invokeStatusEffect(myPet, statusName, details){
 
     if(details.turns <= 0)
     {
@@ -279,7 +258,7 @@ async function invokeStatusEffect(myPet, statusName, details, isStunned){
         return;
     }
 
-    //console.log(statusName + " has been invoked on " + myPet.name)
+    let isStunned = false;
 
     if(statusName === 'stun'){
         isStunned = true;
@@ -293,6 +272,11 @@ async function invokeStatusEffect(myPet, statusName, details, isStunned){
     }
 
     details.turns -= 1;
+
+    if(isStunned)
+        return true
+    else
+        return false
 
 }
 
@@ -312,14 +296,8 @@ async function applyStatusEffect(subAbility, affectedPet, myPet){
 
 async function applyAbility(newGame, subAbility, target){
 
-    //console.log("applyAbility executed")
-    //console.log(JSON.stringify(subAbility) + " - " + target)
-
     let affectedPet = newGame.p1_monsters.filter(monster => monster.id === target).concat(newGame.p2_monsters.filter(monster => monster.id === target))[0]
     let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
-
-    //console.log("currHp of affected pet - before")
-    //console.log(affectedPet)
 
 
     if(subAbility.sub_abilities.status !== null){
@@ -338,11 +316,6 @@ async function applyAbility(newGame, subAbility, target){
     else if (subAbility.sub_abilities.modifier !== null){
         affectedPet.currHp += subAbility.sub_abilities.modifier * myPet.hp
     }
-
-    //console.log("currHp of affected pet")
-    //console.log(affectedPet)
-
-    ////console.log(newGame)
 
 }
 
@@ -367,43 +340,15 @@ function roundUpAllHealth(newGame)
 
 async function gameManager(nameTarget, newGame, mIDTurnOrder)
 {
-    // let myPet = newGame.p1_monsters.filter(monster => monster.id === newGame.turn).concat(newGame.p2_monsters.filter(monster => monster.id === newGame.turn))[0]
-
-    // for (let key in myPet.buffs){
-    //     invokeStatusEffect(myPet , key, myPet.buffs[key])
-    // }
     
     let subAbilities = await getSubAbilitiesBasedOnAbility(nameTarget[0])
-    //console.log(subAbilities)
-    //console.log("xxxtentacion")
+
 
     subAbilities.forEach((sub) => {
         applyAbility(newGame, sub, nameTarget[1])
     });
 
-    ////console.log(newGame)
 
-        // newGame.p1_monsters.forEach(pet => {
-        //     if(pet.id === parseInt(nameTarget[1])){
-        //         pet.currHp -= parseInt(nameTarget[0])
-        //         if(pet.currHp <= 0){
-        //             pet.currHp = 0
-        //             pet.status = 'fainted'
-        //         }
-        //     }
-        // });
-
-        // newGame.p2_monsters.forEach(pet => {
-        //     if(pet.id === parseInt(nameTarget[1])){
-        //         pet.currHp -= parseInt(nameTarget[0])
-        //         if(pet.currHp <= 0){
-        //             pet.currHp = 0
-        //             pet.status = 'fainted'
-        //         }
-        //     }
-        // });
-
-        
         changeTurn(newGame, mIDTurnOrder);  
         roundUpAllHealth(newGame)
 }
@@ -417,5 +362,4 @@ module.exports = {
     gameManager,
     getPlayerMonsters,
     giveRewards
-   // getTestingMonster
 }
