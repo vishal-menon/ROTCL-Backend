@@ -218,7 +218,11 @@ function onTurnStatusEffect(newGame, mIDTurnOrder){
     let isStunned = false
 
     for (let key in myPet.buffs){
-        isStunned |= invokeStatusEffect(myPet , key, myPet.buffs[key], isStunned)
+        let cleanedKey = key.replace(/'/g, '');
+        if(invokeStatusEffect(myPet , cleanedKey, myPet.buffs[key]) === true)
+            {
+                isStunned = true;
+            }
     }
 
     if(isStunned){
@@ -250,7 +254,7 @@ function changeTurn(newGame, mIDTurnOrder)
 
 }
 
-async function invokeStatusEffect(myPet, statusName, details){
+function invokeStatusEffect(myPet, statusName, details){
 
     if(details.turns <= 0)
     {
