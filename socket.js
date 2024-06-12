@@ -72,12 +72,12 @@ io.on('connection', socket => {
         if(!socketService.isSocketInRoom(oppSocketID, io) && playerSocketID !== oppSocketID){
             //If yes
             io.to(oppSocketID).emit("duelRequest", duelRequest);
-            setBattle(true)
+            //setBattle(true)
         }
         else{
             //If no
             socket.emit("AlertMessage", duelRequest.opponent + " maybe dueling someone else.");
-            setBattle(false)
+            //setBattle(false)
         }
 
     });
@@ -86,6 +86,9 @@ io.on('connection', socket => {
 
         let playerSocket = users[duelRequest.player];
         let oppSocket = users[duelRequest.opponent];
+
+        playerSocket.emit("duelJoin");
+        oppSocket.emit("duelJoin");
         
         let p1mon = await socketService.getPlayerMonsters(duelRequest.player);
         let p2mon = await socketService.getPlayerMonsters(duelRequest.opponent);
