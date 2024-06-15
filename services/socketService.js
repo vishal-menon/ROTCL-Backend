@@ -166,11 +166,11 @@ function isGameFinished(currMatch, duelRequest){
             p2deathCount += 1
     });
 
-    if(p1deathCount >= 3)
+    if(p1deathCount >= currMatch.p1_monsters.length)
     {
         return 2
     }
-    else if(p2deathCount >= 3)
+    else if(p2deathCount >= currMatch.p2_monsters.length)
     {
         return 1
     }
