@@ -22,7 +22,6 @@ async function getSubAbilitiesBasedOnAbility(abilityName){
 
 }
 
-
 async function getMonsterByName(name){
 
     let monsters = await fetch(`${baseUrl}/monsters/${name}`, {
@@ -46,8 +45,6 @@ async function getAbilitiesByMID(mid){
     })
     .then(response => response.json())
     .then(data => {
-        //console.log("Abilities by MID : ")
-        //console.log(data)
         return data;
     })
 
@@ -89,7 +86,7 @@ function leaveMatch(pSocket, matchID){
     pSocket.leave(matchID);
 }
 
-async function giveRewards(uid){
+async function giveRewards2(uid){
 
   // const playerStats = await getPlayerStats(uid);
    
@@ -113,12 +110,13 @@ async function giveRewards(uid){
     body: JSON.stringify(playerStats)
     })
 
-   //console.log("done")
+   console.log("done rewarding")
 
 }
 
 async function giveRewards(winnerUID, loserUID){
 
+    console.log("started rewarding")
     // const playerStats = await getPlayerStats(uid);
      
       let winnerStats = await fetch(`${baseUrl}/stats/${winnerUID}`, {
@@ -165,10 +163,11 @@ async function giveRewards(winnerUID, loserUID){
       })
   
      //console.log("done")
+     console.log("done rewarding")
   
   }
 
-async function isGameFinished(currMatch, duelRequest){
+function isGameFinished(currMatch, duelRequest){
 
     let p1deathCount = 0
     let p2deathCount = 0
@@ -187,12 +186,10 @@ async function isGameFinished(currMatch, duelRequest){
 
     if(p1deathCount >= 3)
     {
-        await giveRewards(duelRequest.opponent, duelRequest.player)
         return 2
     }
     else if(p2deathCount >= 3)
     {
-        await giveRewards(duelRequest.player, duelRequest.opponent)
         return 1
     }
     else
@@ -416,5 +413,6 @@ module.exports = {
     changeTurn,
     gameManager,
     getPlayerMonsters,
+    giveRewards
    // getTestingMonster
 }

@@ -1,2 +1,2 @@
-// Run server.js
 require('./server');
+require('./socket');

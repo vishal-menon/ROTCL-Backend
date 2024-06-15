@@ -6,7 +6,6 @@ const { v4: uuidv4 } = require('uuid');
 const Monster = require('./models/monster.js');
 const Game = require('./models/game.js');
 const socketService = require('./services/socketService.js');
-const { log } = require('console');
 
 const app = express();
 app.use(cors());
@@ -151,10 +150,12 @@ io.on('connection', socket => {
             if(await socketService.isGameFinished(currMatch, duelRequest) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
+                await socketService.giveRewards(duelRequest.player, duelRequest.opponent)
             }
             else if(await socketService.isGameFinished(currMatch, duelRequest) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
+                await socketService.giveRewards(duelRequest.opponent, duelRequest.player)
             }
 
         }) 
@@ -169,13 +170,15 @@ io.on('connection', socket => {
             playerSocket.emit("setState", [currMatch.p1_monsters, currMatch.p2_monsters, currMatch.turn])
             oppSocket.emit("setState", [currMatch.p2_monsters, currMatch.p1_monsters, currMatch.turn])
 
-            if(await socketService.isGameFinished(currMatch, duelRequest) === 1){
+            if(socketService.isGameFinished(currMatch, duelRequest) === 1){
                 playerSocket.emit("hasWon", true)
                 oppSocket.emit("hasWon", false)
+                await socketService.giveRewards(duelRequest.player, duelRequest.opponent)
             }
-            else if(await socketService.isGameFinished(currMatch, duelRequest) === 2){
+            else if(socketService.isGameFinished(currMatch, duelRequest) === 2){
                 oppSocket.emit("hasWon", true)
                 playerSocket.emit("hasWon", false)
+                await socketService.giveRewards(duelRequest.opponent, duelRequest.player)
             }
 
         }) 

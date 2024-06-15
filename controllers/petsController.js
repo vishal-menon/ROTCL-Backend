@@ -66,7 +66,7 @@ const updatePet = async (req, res) => {
     
     const body = req.body;
     
-    if (!uid) return res.status(400).json({message : 'uid missing'});
+    if (!mid) return res.status(400).json({message : 'mid missing'});
     
     if (!body) return  res.status(400).json({message : 'body missing'});
      
