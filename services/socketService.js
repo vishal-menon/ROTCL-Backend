@@ -311,13 +311,41 @@ async function applyAbility(newGame, subAbility, target){
    
         affectedPet.currHp += subAbility.sub_abilities.modifier * myPet.currAtk
 
-        if(affectedPet.currHp <= 0){
-            affectedPet.currHp = 0
-            affectedPet.status = 'fainted'
+    }
+    else if (subAbility.sub_abilities.target === 'aoe')
+    {
+        let isP1 = false;
+
+        for(let mon of newGame.p1_monsters)
+        {
+            console.log(mon);
+            if(mon.id === target)
+            {
+                isP1 = true;
+            }
         }
+
+        if(isP1)
+        {
+            for(let mon of newGame.p1_monsters)
+                {
+                    mon.currHp += subAbility.sub_abilities.modifier * myPet.currAtk;
+                }
+        }else{
+            for(let mon of newGame.p2_monsters)
+                {
+                    mon.currHp += subAbility.sub_abilities.modifier * myPet.currAtk;
+                }
+        }
+
     }
     else if (subAbility.sub_abilities.modifier !== null){
         affectedPet.currHp += subAbility.sub_abilities.modifier * myPet.hp
+    }
+
+    if(affectedPet.currHp <= 0){
+        affectedPet.currHp = 0
+        affectedPet.status = 'fainted'
     }
 
 }
